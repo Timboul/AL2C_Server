@@ -8,6 +8,7 @@ package Metier;
 import Controllers.UtilisateurFacade;
 import Entities.Utilisateur;
 import Exception.failAuthentificationException;
+import Exception.mailAlreadyUsedException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -22,24 +23,28 @@ public class gestionUtilisateur implements IgestionUtilisateur {
     private UtilisateurFacade uf;
 
     @Override
-    public void inscriptionClient(String nom, String prenom, String mail, String mdp) {
+    public void inscriptionClient(String nom, String prenom, String mail, String mdp) throws mailAlreadyUsedException{
         
-        // TODO vérifier utilisateur déjà inscrit => vérifier mail 
-        // TODO renvoyer exception si déjà inscrit 
-        // TODO try catch ?? autour du create ? 
-    
         Utilisateur u = new Utilisateur();
         u.setNom(nom);
         u.setPrenom(prenom);
         u.setAdresseMail(mail);
         u.setMotDePasse(mdp);
         
+        if(uf.isMailExists(mail)){
+            throw new mailAlreadyUsedException();
+        }
+    
         uf.create(u);
     }
 
     @Override
-    public int authentificationClient(String mail, String mdp) throws failAuthentificationException {
-        return uf.authentification(mail, mdp);
+    public void authentificationClient(String mail, String mdp) throws failAuthentificationException {
+        //TODO fixer token ici 
+        
+        if(!uf.authentification(mail, mdp))
+                throw new failAuthentificationException();
+        
     }
 
 }

@@ -6,6 +6,7 @@
 package Metier;
 
 import Exception.failAuthentificationException;
+import Exception.mailAlreadyUsedException;
 import javax.ejb.Local;
 
 /**
@@ -15,9 +16,9 @@ import javax.ejb.Local;
 @Local
 public interface IgestionUtilisateur {
     
-    public void inscriptionClient(String nom, String prenom, String mail, String mdp); // TODO EXCEPTIONS
+    public void inscriptionClient(String nom, String prenom, String mail, String mdp)throws mailAlreadyUsedException; 
     
-    public int authentificationClient(String mail, String mdp) throws failAuthentificationException; 
+    public void authentificationClient(String mail, String mdp) throws failAuthentificationException; 
     
     
 }

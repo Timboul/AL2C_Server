@@ -7,10 +7,10 @@ package REST.service;
 
 import Entities.Utilisateur;
 import Exception.failAuthentificationException;
+import Exception.mailAlreadyUsedException;
 import Metier.IgestionUtilisateur;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -21,18 +21,21 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.json.*;
 
 /**
  *
  * @author fez
  */
-@Stateless
+//@Stateless => http://stackoverflow.com/questions/25879898/glassfish-4-1-cant-run-restful-service-when-using-ear-ejb-web-module
+@javax.enterprise.context.RequestScoped
 @Path("utilisateur")
 public class UtilisateurFacadeREST extends AbstractFacade<Utilisateur> {
 
-    @EJB(name="Metier.IgestionUtilisateur")
+    @EJB//(name="Metier.IgestionUtilisateur")
     private IgestionUtilisateur gU;
 
     @PersistenceContext(unitName = "Al2cServer-warPU")
@@ -99,7 +102,7 @@ public class UtilisateurFacadeREST extends AbstractFacade<Utilisateur> {
     @Path("inscription")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject inscription(String data) {
+    public String inscription(String data) {
 
         JSONObject obj = new JSONObject(data);
         String nom = obj.getString("nom");
@@ -108,28 +111,28 @@ public class UtilisateurFacadeREST extends AbstractFacade<Utilisateur> {
         String mail = obj.getString("mail");
         String mdp = obj.getString("mdp");
 
-        //TODO gérer echec avec exception et retour => { "err":"001"}
-        gU.inscriptionClient(nom, prenom, mail, mdp);
+        try {
+            gU.inscriptionClient(nom, prenom, mail, mdp);
+        } catch (mailAlreadyUsedException e) {
+            return new JSONObject().put("err", "001").toString();
+        }
 
-        return new JSONObject("{\"statut\":\"ok\"}");
+        return new JSONObject().put("Statut", "ok").toString();
     }
 
-    @POST
+    @GET
     @Path("authentification")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject authentification(String data) {
-
-        JSONObject obj = new JSONObject(data);
-
-        String mail = obj.getString(data);
-        String mdp = obj.getString(data);
+    public Response authentification(@QueryParam("mail") String p_mail, @QueryParam("mdp") String p_mdp) {
+   
+        String mail = p_mail;
+        String mdp = p_mdp;
 
         try {
             gU.authentificationClient(mail, mdp);
-            return new JSONObject("{\"token\":\"ok\"}");
-        } catch (failAuthentificationException ex) {
-            return new JSONObject("{ \"err\":\"002\"}");
+            return Response.ok(new JSONObject().put("token", "okokokok").toString(), MediaType.APPLICATION_JSON).build();
+        } catch (failAuthentificationException ex) {          
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
