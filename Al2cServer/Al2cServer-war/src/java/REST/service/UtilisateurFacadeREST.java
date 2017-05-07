@@ -41,7 +41,6 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     /*
     @PersistenceContext(unitName = "Al2cServer-warPU")
     private EntityManager em;
-
     public UtilisateurFacadeREST() {
         super(Utilisateur.class);
     }
@@ -52,41 +51,35 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     public void create(Utilisateur entity) {
         super.create(entity);
     }
-
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Integer id, Utilisateur entity) {
         super.edit(entity);
     }
-
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Integer id) {
         super.remove(super.find(id));
     }
-
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Utilisateur find(@PathParam("id") Integer id) {
         return super.find(id);
     }
-
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Utilisateur> findAll() {
         return super.findAll();
     }
-
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Utilisateur> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
-
   @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
@@ -180,3 +173,4 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     }
 
 }
+
