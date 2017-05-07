@@ -37,29 +37,31 @@ public class UtilisateurFacade extends AbstractFacade<Utilisateur> {
      * @param mdp
      * @return id de l'utilisateur
      */
-    public boolean authentification(String mail, String mdp) {
-        System.out.println(mail+" "+mdp);
+    public int authentification(String mail, String mdp) {
         try {
-            Utilisateur u = em.createNamedQuery("Utilisateur.findByMailAndMotDePasse",Utilisateur.class)
+            Utilisateur u = em.createNamedQuery("Utilisateur.findByMailAndMotDePasse", Utilisateur.class)
                     .setParameter("adresseMail", mail)
                     .setParameter("motDePasse", mdp)
                     .getSingleResult();
             System.out.println("ok");
-            return true;
+            return u.getId();
         } catch (Exception e) {
             //System.out.println(e.getCause());
-            return false;
+            return -1;
         }
 
     }
 
     public boolean isMailExists(String mail) {
-        System.out.println(mail);
-        Utilisateur u = (Utilisateur) em.createNamedQuery("Utilisateur.findByAdresseMail")
-                .setParameter("adresseMail", mail)
-                .getSingleResult();
-
-        return u != null;
+        try {
+            Utilisateur u = (Utilisateur) em.createNamedQuery("Utilisateur.findByAdresseMail")
+                    .setParameter("adresseMail", mail)
+                    .getSingleResult();
+            
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 
 }

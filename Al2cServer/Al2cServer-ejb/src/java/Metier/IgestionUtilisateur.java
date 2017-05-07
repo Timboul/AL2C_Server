@@ -5,8 +5,10 @@
  */
 package Metier;
 
+import Entities.Utilisateur;
 import Exception.failAuthentificationException;
 import Exception.mailAlreadyUsedException;
+import Exception.notFoundUtilisateurException;
 import javax.ejb.Local;
 
 /**
@@ -18,7 +20,9 @@ public interface IgestionUtilisateur {
     
     public void inscriptionClient(String nom, String prenom, String mail, String mdp)throws mailAlreadyUsedException; 
     
-    public void authentificationClient(String mail, String mdp) throws failAuthentificationException; 
+    public int authentificationClient(String mail, String mdp) throws failAuthentificationException; 
     
+    public Utilisateur afficherInformationsCompteUtilisateur(int id) throws notFoundUtilisateurException;
     
+    public void modifierInformationsCompteUtilisateur(int id, String nom, String prenom, String mail, String mdp) throws notFoundUtilisateurException;
 }
