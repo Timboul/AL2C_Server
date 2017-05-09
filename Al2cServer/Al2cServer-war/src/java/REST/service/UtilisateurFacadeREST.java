@@ -116,7 +116,7 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
 
     @GET
     @Path("authentification")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON) // 
     public Response authentification(@QueryParam("mail") String p_mail, @QueryParam("mdp") String p_mdp) {
 
         String mail = p_mail;
@@ -126,12 +126,12 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
             int id = gU.authentificationClient(mail, mdp);
             return Response.ok(new JSONObject().put("token", id).toString(), MediaType.APPLICATION_JSON).build();
         } catch (failAuthentificationException ex) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+           return   Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
     @GET
-    @Path("afficherInfo")
+    @Path("afficherParametres")
     @Produces(MediaType.APPLICATION_JSON)
     public Response afficherInformationUtilisateur(@QueryParam("token") int pid) {
 
@@ -141,7 +141,6 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
             obj.put("nom", u.getNom());
             obj.put("prenom", u.getPrenom());
             obj.put("mail", u.getAdresseMail());
-            obj.put("mdp", u.getMotDePasse());
 
             return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
         } catch (notFoundUtilisateurException ex) {
@@ -150,7 +149,7 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     }
 
     @PUT
-    @Path("modifierInfo")
+    @Path("modifierParametres")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modifierInformationUtilisateur(@QueryParam("token") int pid, String data) {
 
@@ -166,7 +165,7 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
             String mdp = obj.getString("mdp");
             System.out.println(pid);
            gU.modifierInformationsCompteUtilisateur(pid, nom, prenom, mail, mdp); 
-            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(new JSONObject().put("Statut", "ok").toString() , MediaType.APPLICATION_JSON).build();
         } catch (notFoundUtilisateurException ex) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
