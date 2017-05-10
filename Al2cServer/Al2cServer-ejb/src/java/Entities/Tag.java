@@ -18,6 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -48,7 +49,8 @@ public class Tag implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "libelle")
     private String libelle;
-    @ManyToMany(mappedBy = "tagCollection")
+
+    @ManyToMany(mappedBy = "tagCollection") 
     private Collection<Contact> contactCollection;
     @JoinColumn(name = "utilisateur_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
@@ -94,7 +96,7 @@ public class Tag implements Serializable {
     public Utilisateur getUtilisateurId() {
         return utilisateurId;
     }
-
+    
     public void setUtilisateurId(Utilisateur utilisateurId) {
         this.utilisateurId = utilisateurId;
     }

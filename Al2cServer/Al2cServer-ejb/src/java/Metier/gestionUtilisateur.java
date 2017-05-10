@@ -23,6 +23,14 @@ public class gestionUtilisateur implements IgestionUtilisateur {
     @EJB
     private UtilisateurFacade uf;
 
+    /**
+     * Créer un utilisateur dans le cas ou son mailn'existe pas déjà en base 
+     * @param nom
+     * @param prenom
+     * @param mail
+     * @param mdp
+     * @throws mailAlreadyUsedException 
+     */
     @Override
     public void inscriptionClient(String nom, String prenom, String mail, String mdp) throws mailAlreadyUsedException {
 
@@ -35,10 +43,16 @@ public class gestionUtilisateur implements IgestionUtilisateur {
         if (uf.isMailExists(mail)) {
             throw new mailAlreadyUsedException();
         }
-
         uf.create(u);
     }
 
+    /**
+     * Authentifie un utilisateur 
+     * @param mail
+     * @param mdp
+     * @return l'id utilisateur 
+     * @throws failAuthentificationException 
+     */
     @Override
     public int authentificationClient(String mail, String mdp) throws failAuthentificationException {
         //TODO fixer token ici 
@@ -49,6 +63,12 @@ public class gestionUtilisateur implements IgestionUtilisateur {
         return uId;
     }
 
+    /**
+     * Retourne l'utilisateur si il existe bien 
+     * @param id
+     * @return
+     * @throws notFoundUtilisateurException 
+     */
     @Override
     public Utilisateur afficherInformationsCompteUtilisateur(int id) throws notFoundUtilisateurException {
         try {
@@ -58,6 +78,15 @@ public class gestionUtilisateur implements IgestionUtilisateur {
         }
     }
 
+    /**
+     * modifie les informations de l'utilisateur 
+     * @param id
+     * @param nom
+     * @param prenom
+     * @param mail
+     * @param mdp
+     * @throws notFoundUtilisateurException 
+     */
     @Override
     public void modifierInformationsCompteUtilisateur(int id, String nom, String prenom, String mail, String mdp) throws notFoundUtilisateurException {
         try {

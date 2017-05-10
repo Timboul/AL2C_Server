@@ -10,12 +10,7 @@ import Exception.notFoundEvenementException;
 import Metier.IgestionEvenement;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.json.Json;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -36,69 +31,7 @@ public class EvenementFacadeREST{
     
       @EJB
     private IgestionEvenement gE;
-/*
-    @PersistenceContext(unitName = "Al2cServer-warPU")
-    private EntityManager em;
 
-    public EvenementFacadeREST() {
-        super(Evenement.class);
-    }
-
-    @POST
-    @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Evenement entity) {
-        super.create(entity);
-    }
-
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Evenement entity) {
-        super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
-    }
-
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Evenement find(@PathParam("id") Integer id) {
-        return super.find(id);
-    }
-
-    @GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Evenement> findAll() {
-        return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Evenement> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-    */
-  
-    
     @GET
     @Path("getListeEvenements")
     @Produces(MediaType.APPLICATION_JSON)
@@ -114,14 +47,8 @@ public class EvenementFacadeREST{
                JSONObject tempo = new JSONObject();
                tempo.put("id", e.getId());
                tempo.put("intitule", e.getIntitule());
-               tempo.put("description", e.getDescription());
-               tempo.put("dateDebut", e.getDateDebut());
-               tempo.put("datefin", e.getDateFin());
                tempo.put("etat",e.getEtatEvenement());
-               tempo.put("lieu", e.getLieu());
-               tempo.put("nombreInvite", e.getNombreInvites());
-               tempo.put("message", e.getMessageInvitation());
-               
+                   
                events.put(tempo);
            }
            
@@ -130,15 +57,78 @@ public class EvenementFacadeREST{
            return Response.ok(events.toString(), MediaType.APPLICATION_JSON).build();
         }catch(notFoundEvenementException e){
             return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        
-        
+        }  
     }
     
     
+    @POST 
+    @Path("creerEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response creerEvenement(@QueryParam("token") int pid ,String data ){
+        String dateFin = "";
+       try{
+             
+           JSONObject obj = new JSONObject(data);
+           
+           if(!obj.has("dateFin")){
+               dateFin = null;
+           }else{
+              dateFin =  obj.getString("dateFin");
+           }
+                 
+            // int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg)
+           gE.creationEvenement(pid, obj.getString("intitule"), obj.getString("description"),
+           obj.getString("dateDebut"), dateFin, obj.getString("lieu"), obj.getInt("nombreInvite"), obj.getString("message"));
+           
+                 
+           return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }  
+    }
     
     
+    @PUT
+    @Path("{id}/modifierEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modifierEvenement(@QueryParam("token") int pid ,@PathParam("id") Integer idEvent,String data ){
+        String dateFin = "";
+       try{
+
+           JSONObject obj = new JSONObject(data);
+           
+           if(!obj.has("dateFin")){
+               dateFin = null;
+           }else{
+              dateFin =  obj.getString("dateFin");
+           }
+                 
+            // int idEvent, int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg
+            gE.modifierEvenement(idEvent, pid, obj.getString("intitule"), obj.getString("description"), 
+                    obj.getString("dateDebut"), dateFin, obj.getString("lieu"), obj.getInt("nombreInvite"), obj.getString("message"));
+          
+           return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }  
+    }
     
-    
-    
+    @GET
+    @Path("{id}/annulerEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response annulerEvenement(@QueryParam("token") int pid ,@PathParam("id") Integer idEvent ){
+       try{
+          //TODO voir si on vérifie la valider du token ici
+           gE.annulerEvenement(idEvent,pid);
+                 
+           return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }  
+    }
 }

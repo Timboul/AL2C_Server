@@ -38,6 +38,7 @@ public class UtilisateurFacade extends AbstractFacade<Utilisateur> {
      * @return id de l'utilisateur
      */
     public int authentification(String mail, String mdp) {
+        //System.out.println(mail+" "+mdp);
         try {
             Utilisateur u = em.createNamedQuery("Utilisateur.findByMailAndMotDePasse", Utilisateur.class)
                     .setParameter("adresseMail", mail)
@@ -46,7 +47,7 @@ public class UtilisateurFacade extends AbstractFacade<Utilisateur> {
             System.out.println("ok");
             return u.getId();
         } catch (Exception e) {
-            //System.out.println(e.getCause());
+          //  System.out.println(e.getCause());
             return -1;
         }
 

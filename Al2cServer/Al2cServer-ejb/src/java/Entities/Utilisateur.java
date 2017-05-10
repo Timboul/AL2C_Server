@@ -190,5 +190,5 @@ public class Utilisateur implements Serializable {
     public String toString() {
         return "Entities.Utilisateur[ id=" + id + " ]";
     }
-
+    
 }

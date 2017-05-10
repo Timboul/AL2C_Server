@@ -58,7 +58,7 @@ public class Contact implements Serializable {
     @JoinTable(name = "affectation_tag", joinColumns = {
         @JoinColumn(name = "contact_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "tag_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany 
     private Collection<Tag> tagCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private Collection<Invitation> invitationCollection;
