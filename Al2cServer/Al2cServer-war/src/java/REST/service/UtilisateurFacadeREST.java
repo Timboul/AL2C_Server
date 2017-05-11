@@ -38,65 +38,11 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     @EJB//(name="Metier.IgestionUtilisateur")
     private IgestionUtilisateur gU;
 
-    /*
-    @PersistenceContext(unitName = "Al2cServer-warPU")
-    private EntityManager em;
-    public UtilisateurFacadeREST() {
-        super(Utilisateur.class);
-    }
-  
-    @POST
-    @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Utilisateur entity) {
-        super.create(entity);
-    }
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Utilisateur entity) {
-        super.edit(entity);
-    }
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
-    }
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Utilisateur find(@PathParam("id") Integer id) {
-        return super.find(id);
-    }
-    @GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Utilisateur> findAll() {
-        return super.findAll();
-    }
-    @GET
-    @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Utilisateur> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-  @GET
-    @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
-    }*/
- /*
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-     */
     @POST
     @Path("inscription")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String inscription(String data) {
+    public Response inscription(String data) {
 
         JSONObject obj = new JSONObject(data);
 
@@ -107,11 +53,12 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
 
         try {
             gU.inscriptionClient(nom, prenom, mail, mdp);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString()).build();
         } catch (mailAlreadyUsedException e) {
-            return new JSONObject().put("err", "001").toString();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        return new JSONObject().put("Statut", "ok").toString();
+        
     }
 
     @GET
