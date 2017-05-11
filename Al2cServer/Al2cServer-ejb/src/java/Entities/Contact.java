@@ -11,6 +11,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,30 +43,37 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Contact implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
     @Column(name = "nom")
     private String nom;
+    
     @Size(max = 30)
     @Column(name = "prenom")
     private String prenom;
+    
     @JoinTable(name = "affectation_tag", joinColumns = {
-        @JoinColumn(name = "contact_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "tag_id", referencedColumnName = "id")})
+    @JoinColumn(name = "contact_id", referencedColumnName = "id")}, inverseJoinColumns = {
+    @JoinColumn(name = "tag_id", referencedColumnName = "id")})
     @ManyToMany 
     private Collection<Tag> tagCollection;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private Collection<Invitation> invitationCollection;
+    
     @JoinColumn(name = "utilisateur_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Utilisateur utilisateurId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contactId")
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contactId", fetch = FetchType.EAGER)
     private Collection<Canal> canalCollection;
 
     public Contact() {

@@ -5,6 +5,7 @@
  */
 package Entities;
 
+import Entities.util.TypeCanal;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -35,17 +36,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Canal implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Size(max = 80)
     @Column(name = "valeur")
     private String valeur;
+    
     @Size(max = 8)
     @Column(name = "type_canal")
-    private String typeCanal;
+    private TypeCanal typeCanal;
+    
     @JoinColumn(name = "contact_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Contact contactId;
@@ -73,11 +78,11 @@ public class Canal implements Serializable {
         this.valeur = valeur;
     }
 
-    public String getTypeCanal() {
+    public TypeCanal getTypeCanal() {
         return typeCanal;
     }
 
-    public void setTypeCanal(String typeCanal) {
+    public void setTypeCanal(TypeCanal typeCanal) {
         this.typeCanal = typeCanal;
     }
 
