@@ -77,7 +77,7 @@ public class ContactREST {
     }
     
     @GET
-    @Path("contacts")
+    @Path("{idContact}/getContact")
     @Produces(MediaType.APPLICATION_JSON)
     public Response afficherContact(@QueryParam("token") int id,
             @PathParam("idContact") Integer idContact) {
