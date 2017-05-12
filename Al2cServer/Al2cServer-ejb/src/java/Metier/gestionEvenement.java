@@ -5,6 +5,7 @@
  */
 package Metier;
 
+import Entities.util.enumEtatEvenement;
 import Controllers.EvenementFacade;
 import Controllers.UtilisateurFacade;
 import Entities.Evenement;
@@ -29,9 +30,9 @@ public class gestionEvenement implements IgestionEvenement {
     @EJB
     private UtilisateurFacade uF;
 
-    public enum etat {
+  /*  public enum etat {
         A_VENIR, EN_COURS, PASSE, ANNULE
-    };
+    };*/
 
     @Override
     public List<Evenement> getListeEvenements(int idUser) throws notFoundEvenementException {
@@ -72,7 +73,7 @@ public class gestionEvenement implements IgestionEvenement {
             event.setMessageInvitation(msg);
             event.setUtilisateurId(u);
 
-            event.setEtatEvenement(etat.A_VENIR.toString());
+            event.setEtatEvenement(enumEtatEvenement.A_VENIR.toString());
 
             eF.create(event);
 
@@ -139,7 +140,7 @@ public class gestionEvenement implements IgestionEvenement {
             }
 
             Evenement event = eF.find(idEvent);
-            event.setEtatEvenement(etat.ANNULE.toString());
+            event.setEtatEvenement(enumEtatEvenement.ANNULE.toString());
 
             eF.edit(event);
 
