@@ -36,7 +36,7 @@ public class ContactREST {
     private IgestionCanal gestionCanal;
     
     @GET
-    @Path("contacts")
+    @Path("getContactsList")
     @Produces(MediaType.APPLICATION_JSON)
     public Response afficherListeContacts(@QueryParam("token") int id) {
         try {
@@ -60,7 +60,7 @@ public class ContactREST {
     }
     
     @POST
-    @Path("contacts/creerContact")
+    @Path("creerContact")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response creerContact(@QueryParam("token") int id, String data) {
@@ -96,7 +96,7 @@ public class ContactREST {
     }
 
     @PUT
-    @Path("contacts/{idContact}/modifierContact")
+    @Path("{idContact}/modifierContact")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modifierContact(@QueryParam("token") int id,
