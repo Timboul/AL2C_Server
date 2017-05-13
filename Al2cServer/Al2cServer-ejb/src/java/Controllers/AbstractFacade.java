@@ -42,6 +42,7 @@ public abstract class AbstractFacade<T> {
         } else {
             getEntityManager().persist(entity);
              getEntityManager().getEntityManagerFactory().getCache().evictAll();
+             getEntityManager().flush();
         }
     }
 

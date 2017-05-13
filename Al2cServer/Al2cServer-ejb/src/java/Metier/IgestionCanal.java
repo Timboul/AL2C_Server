@@ -20,7 +20,7 @@ public interface IgestionCanal {
      * @throws notFoundUtilisateurException 
      */
     public void ajouterCanal(int idContact, int idUtilisateur, String valeur,
-            TypeCanal typeCanal) throws notFoundUtilisateurException; 
+            String typeCanal) throws notFoundUtilisateurException; 
     
     /**
      * Modifie le canal dont l'identifiant est passé en paramètres
@@ -31,7 +31,7 @@ public interface IgestionCanal {
      * @throws noCanalFoundException 
      */
     public void modifierCanal(int idCanal, int idUtilisateur, String valeur,
-            TypeCanal typeCanal) throws noCanalFoundException; 
+            String typeCanal) throws noCanalFoundException; 
     
     /**
      * Canal le canal dont l'identifiant est passé en paramètres

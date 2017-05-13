@@ -49,7 +49,7 @@ public class Canal implements Serializable {
     
     @Size(max = 8)
     @Column(name = "type_canal")
-    private TypeCanal typeCanal;
+    private String typeCanal;
     
     @JoinColumn(name = "contact_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
@@ -78,11 +78,11 @@ public class Canal implements Serializable {
         this.valeur = valeur;
     }
 
-    public TypeCanal getTypeCanal() {
+    public String getTypeCanal() {
         return typeCanal;
     }
 
-    public void setTypeCanal(TypeCanal typeCanal) {
+    public void setTypeCanal(String typeCanal) {
         this.typeCanal = typeCanal;
     }
 

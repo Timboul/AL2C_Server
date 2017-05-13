@@ -38,9 +38,10 @@ public interface IgestionContact {
      * @param idUtilisateur identifiant de l'utilisateur
      * @param nom nom du contact à créer
      * @param prenom prénom du contact à créer
+     * @return l'identifiant du contact qui a été créé
      * @throws notFoundUtilisateurException 
      */
-    public void ajouterContact(int idUtilisateur, String nom, String prenom)
+    public int ajouterContact(int idUtilisateur, String nom, String prenom)
             throws notFoundUtilisateurException; 
     
     /**

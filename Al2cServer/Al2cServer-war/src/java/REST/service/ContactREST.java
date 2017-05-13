@@ -1,6 +1,8 @@
 package REST.service;
 
+import Entities.Canal;
 import Entities.Contact;
+import Entities.util.TypeCanal;
 import Exception.noContactExistsException;
 import Exception.unknowUserIdException;
 import Metier.IgestionCanal;
@@ -66,9 +68,16 @@ public class ContactREST {
     public Response creerContact(@QueryParam("token") int id, String data) {
         try {
             JSONObject obj = new JSONObject(data);
-            gestionContact.ajouterContact(id, obj.getString("nom"),
-                    obj.getString("prenom"));
-
+            int contactId = gestionContact.ajouterContact(id,
+                    obj.getString("nom"), obj.getString("prenom"));
+            JSONArray canaux = new JSONArray(obj.getJSONArray("canaux").toString());
+            for (int i = 0; i < canaux.length(); i++) {                
+                JSONObject canal = new JSONObject(canaux.get(i).toString());
+                gestionCanal.ajouterCanal(contactId, id,
+                        canal.getString("valeur"),
+                        canal.getString("typeCanal"));
+            }
+            
             return Response.ok(new JSONObject().put("statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
@@ -87,6 +96,17 @@ public class ContactREST {
             obj.put("id", leContact.getId());
             obj.put("nom", leContact.getNom());
             obj.put("prenom", leContact.getPrenom());
+            
+            JSONArray canaux = new JSONArray();
+            for (Canal leCanal : leContact.getCanalCollection()) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", leCanal.getId());
+                tempo.put("typeCanal", leCanal.getTypeCanal());
+                tempo.put("valeur", leCanal.getValeur());
+                
+                canaux.put(tempo);
+            }
+            obj.put("canaux", canaux);
                     
             return Response.ok(obj.toString(), MediaType.APPLICATION_JSON)
                     .build();
@@ -103,8 +123,17 @@ public class ContactREST {
             @PathParam("idContact") Integer idContact, String data) {
         try {
             JSONObject obj = new JSONObject(data);
-            gestionContact.modifierContact(id, idContact, obj.getString("nom"),
+            gestionContact.modifierContact(idContact, id, obj.getString("nom"),
                     obj.getString("prenom"));
+
+            JSONArray canaux = new JSONArray(obj.getJSONArray("canaux").toString());
+            for (int i = 0; i < canaux.length(); i++) {                
+                JSONObject canal = new JSONObject(canaux.get(i).toString());
+                gestionCanal.modifierCanal(Integer.parseInt(canal.getString("id")), id,
+                        canal.getString("valeur"),
+                        canal.getString("typeCanal"));
+            }
+            
             return Response.ok(new JSONObject().put("statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {

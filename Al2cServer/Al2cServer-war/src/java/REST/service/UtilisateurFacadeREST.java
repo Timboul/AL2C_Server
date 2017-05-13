@@ -1,25 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package REST.service;
 
 import Entities.Utilisateur;
 import Exception.failAuthentificationException;
 import Exception.mailAlreadyUsedException;
 import Exception.notFoundUtilisateurException;
+import Metier.IgestionContact;
 import Metier.IgestionUtilisateur;
-import java.util.List;
 import javax.ejb.EJB;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -29,6 +21,7 @@ import org.json.*;
 /**
  *
  * @author fez
+ * @author Alexandre Bertrand
  */
 //@Stateless => http://stackoverflow.com/questions/25879898/glassfish-4-1-cant-run-restful-service-when-using-ear-ejb-web-module
 @javax.enterprise.context.RequestScoped
@@ -37,6 +30,9 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
 
     @EJB//(name="Metier.IgestionUtilisateur")
     private IgestionUtilisateur gU;
+    
+    @EJB
+    private IgestionContact gC;
 
     @POST
     @Path("inscription")
@@ -73,6 +69,21 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
             int id = gU.authentificationClient(mail, mdp);
             return Response.ok(new JSONObject().put("token", id).toString(), MediaType.APPLICATION_JSON).build();
         } catch (failAuthentificationException ex) {
+           return   Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+    
+    @GET
+    @Path("synchroniserContacts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response synchroniserListeContactsUtilisateur(@QueryParam("token") int pid) {
+        try {
+            if (!gC.hasContact(pid)) {
+                System.err.println("TODO : Synchroniser contacts"); // STUB
+            }
+            return Response.ok(new JSONObject().put("statut", !gC.hasContact(pid)).toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception ex) {
            return   Response.status(Response.Status.NOT_FOUND).build();
         }
     }

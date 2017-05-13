@@ -32,7 +32,7 @@ public class gestionCanal implements IgestionCanal {
     
     @Override
     public void ajouterCanal(int idContact, int idUtilisateur, String valeur,
-            TypeCanal typeCanal) throws notFoundUtilisateurException {
+            String typeCanal) throws notFoundUtilisateurException {
         try {
             if (!isContactExistsInUtilisateurContacts(idContact, idUtilisateur))
                 throw new noContactExistsException();
@@ -40,7 +40,9 @@ public class gestionCanal implements IgestionCanal {
             
             Canal canal = new Canal();
             canal.setValeur(valeur);
-            canal.setTypeCanal(typeCanal);
+            System.out.println("avant");
+            canal.setTypeCanal(TypeCanal.valueOf(typeCanal).toString());
+            System.out.println("après");
             canal.setContactId(c);
 
             canalFacade.create(canal);
@@ -51,15 +53,14 @@ public class gestionCanal implements IgestionCanal {
     
     @Override
     public void modifierCanal(int idCanal, int idUtilisateur, String valeur,
-            TypeCanal typeCanal) throws noCanalFoundException {
+            String typeCanal) throws noCanalFoundException {
         try {
             Canal canal = canalFacade.find(idCanal);
             if (!isCanalExistsInUtilisateurCanaux(idCanal,
                     canal.getContactId().getId(), idUtilisateur))
                 throw new noCanalFoundException();
-
             canal.setValeur(valeur);
-            canal.setTypeCanal(typeCanal);
+            canal.setTypeCanal(TypeCanal.valueOf(typeCanal).toString());
 
             canalFacade.edit(canal);
         } catch (Exception e) {
@@ -95,7 +96,6 @@ public class gestionCanal implements IgestionCanal {
             List<Contact> contact = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
             if (contact.stream().anyMatch((e) -> (e.getId().equals(idContact)))) {
-                Contact c = contact.get(idContact);
                 List<Canal> canal = (List<Canal>) contactFacade
                     .find(idContact).getCanalCollection();
                 return canal.stream().anyMatch((e) -> (e.getId().equals(idCanal)));

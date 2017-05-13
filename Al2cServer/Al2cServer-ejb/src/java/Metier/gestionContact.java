@@ -48,7 +48,7 @@ public class gestionContact implements IgestionContact {
     }
 
     @Override
-    public void ajouterContact(int idUtilisateur, String nom, String prenom)
+    public int ajouterContact(int idUtilisateur, String nom, String prenom)
             throws notFoundUtilisateurException {
         // vérifier qu'aucun des champs n'est vide
         try {
@@ -60,6 +60,7 @@ public class gestionContact implements IgestionContact {
             contact.setUtilisateurId(u);
 
             contactFacade.create(contact);
+            return contact.getId();
         } catch (Exception e) {
             System.out.println("test " + e.getMessage());
             throw new notFoundUtilisateurException();
@@ -72,7 +73,6 @@ public class gestionContact implements IgestionContact {
         try {
             if (!isContactExistsInUtilisateurContacts(idContact, idUtilisateur))
                 throw new noContactExistsException();
-
             Contact contact = contactFacade.find(idContact);
             contact.setNom(nom);
             contact.setPrenom(prenom);
@@ -108,6 +108,7 @@ public class gestionContact implements IgestionContact {
         try {
             List<Contact> contact = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
+
             return contact.stream().anyMatch((e) -> (e.getId().equals(idContact)));
         } catch (Exception e) {
             return false;
