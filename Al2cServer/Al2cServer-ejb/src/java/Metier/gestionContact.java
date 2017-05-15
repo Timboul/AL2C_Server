@@ -58,7 +58,7 @@ public class gestionContact implements IgestionContact {
             contact.setNom(nom);
             contact.setPrenom(prenom);
             contact.setUtilisateurId(u);
-
+            
             contactFacade.create(contact);
             return contact.getId();
         } catch (Exception e) {

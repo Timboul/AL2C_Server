@@ -141,4 +141,30 @@ public class ContactREST {
         }
     }
     
+    @POST
+    @Path("creerContacts")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response creerContacts(@QueryParam("token") int id, String data) {
+        try {
+            JSONArray contacts = new JSONArray(data);
+            for (int i = 0; i < contacts.length() - 1; i++) { 
+                JSONObject contact = new JSONObject(contacts.get(i).toString());                
+                int contactId = gestionContact.ajouterContact(id, 
+                        contact.getString("nom"), contact.getString("prenom"));
+                JSONArray canaux = new JSONArray(contact.getJSONArray("canaux").toString());
+                for (int j = 0; j < canaux.length(); j++) {                
+                    JSONObject canal = new JSONObject(canaux.get(j).toString());
+                    gestionCanal.ajouterCanal(contactId, id,
+                            canal.getString("valeur"),
+                            canal.getString("typeCanal"));
+                }
+            }
+            return Response.ok(new JSONObject().put("statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
 }
