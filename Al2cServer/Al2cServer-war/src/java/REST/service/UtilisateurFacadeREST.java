@@ -78,13 +78,10 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     @Produces(MediaType.APPLICATION_JSON)
     public Response synchroniserListeContactsUtilisateur(@QueryParam("token") int pid) {
         try {
-            if (!gC.hasContact(pid)) {
-                System.err.println("TODO : Synchroniser contacts"); // STUB
-            }
             return Response.ok(new JSONObject().put("statut", !gC.hasContact(pid)).toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception ex) {
-           return   Response.status(Response.Status.NOT_FOUND).build();
+            return   Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 

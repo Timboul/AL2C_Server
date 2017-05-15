@@ -5,7 +5,6 @@ import Entities.Invitation;
 import Exception.notFoundEvenementException;
 import Metier.IgestionEvenement;
 import Entities.util.enumEtatEvenement;
-import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -43,12 +42,26 @@ public class EvenementFacadeREST {
             JSONObject obj = new JSONObject();
 
             for (Evenement e : lesEvents) {
-                JSONObject tempo = new JSONObject();
-                tempo.put("id", e.getId());
-                tempo.put("intitule", e.getIntitule());
-                tempo.put("etat", e.getEtatEvenement());
+                if (e.getEtatEvenement().equals(enumEtatEvenement.PASSE.toString()) || 
+                    e.getEtatEvenement().equals(enumEtatEvenement.ANNULE.toString())) {
+                    JSONObject tempo = new JSONObject();
+                    tempo.put("id", e.getId());
+                    tempo.put("etat", e.getEtatEvenement());
+                    tempo.put("intitule", e.getIntitule());
+                    tempo.put("dateDebut", e.getDateDebut());
+                    tempo.put("dateFin", e.getDateFin());
+                    tempo.put("lieu", e.getLieu()); // TODO table lieu
+                    tempo.put("nbInvites", e.getInvitationCollection().size());
+                    tempo.put("nbPlaces", e.getNombreInvites());
+                    int nbPresents = 0;
+                    for (Invitation i : e.getInvitationCollection()) {
+                        if (i.getPresence())
+                            nbPresents++;
+                    }
+                    tempo.put("nbPresents", nbPresents);
 
-                events.put(tempo);
+                    events.put(tempo);
+                }
             }
 
             obj.put("Evenements", events);
@@ -71,18 +84,26 @@ public class EvenementFacadeREST {
             JSONObject obj = new JSONObject();
 
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement().equals(enumEtatEvenement.A_VENIR.toString())) {
+                if (e.getEtatEvenement().equals(enumEtatEvenement.A_VENIR.toString()) || 
+                    e.getEtatEvenement().equals(enumEtatEvenement.EN_COURS.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
+                    tempo.put("etat", e.getEtatEvenement());
                     tempo.put("intitule", e.getIntitule());
                     tempo.put("dateDebut", e.getDateDebut());
-                    tempo.put("lieu", e.getLieu());
-
+                    tempo.put("dateFin", e.getDateFin());
+                    tempo.put("lieu", e.getLieu()); // TODO table lieu
+                    tempo.put("nbInvites", e.getInvitationCollection().size());
+                    tempo.put("nbPlaces", e.getNombreInvites());
+                    int nbPresents = 0;
+                    for (Invitation i : e.getInvitationCollection()) {
+                        if (i.getPresence())
+                            nbPresents++;
+                    }
+                    tempo.put("nbPresents", nbPresents);
                     events.put(tempo);
                 }
-
             }
-
             obj.put("Evenements", events);
 
             return Response.ok(events.toString(), MediaType.APPLICATION_JSON).build();
@@ -95,7 +116,7 @@ public class EvenementFacadeREST {
     @Path("{id}/getEvenement")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getEvenement(@QueryParam("token") int id,
-            @PathParam("idEvenement") Integer idEvenement) {
+            @PathParam("id") Integer idEvenement) {
         try {
             Evenement e = gE.afficherEvenement(idEvenement, id);
 
@@ -107,9 +128,11 @@ public class EvenementFacadeREST {
             obj.put("dateDebut", e.getDateDebut());
             obj.put("dateFin", e.getDateFin());
             obj.put("lieu", e.getLieu()); // TODO table lieu
+                        
             obj.put("nbInvites", e.getInvitationCollection().size());
             obj.put("nbPlaces", e.getNombreInvites());
             obj.put("message", e.getMessageInvitation());
+
             int nbPresents = 0;
             for (Invitation i : e.getInvitationCollection()) {
                 if (i.getPresence())
@@ -122,7 +145,6 @@ public class EvenementFacadeREST {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
-
 
     @POST
     @Path("creerEvenement")

@@ -133,10 +133,8 @@ public class tagREST {
         }
     }
     
-    
-    
     @GET 
-    @Path("{idTag}/getListeContactByTag")
+    @Path("{idTag}/getListContactByTag")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getListeContactsByTag(@QueryParam("token") int id, @PathParam("idTag") Integer idTag) {
         try {

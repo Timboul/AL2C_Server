@@ -116,16 +116,12 @@ public class gestionEvenement implements IgestionEvenement {
     }
 
     @Override
-    public Evenement afficherEvenement(int idEvent, int idUser) throws notFoundEvenementException { // VOIR SI ON V2RIFIE AVEC l'id USER ??? que l'évenement soit bien a lui ????
-
+    public Evenement afficherEvenement(int idEvent, int idUser) throws notFoundEvenementException {
         try {
-
             if (!isEventExistsOnUserEvents(idEvent, idUser)) {
                 throw new notFoundEvenementException();
             }
-
             return eF.find(idEvent);
-
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
