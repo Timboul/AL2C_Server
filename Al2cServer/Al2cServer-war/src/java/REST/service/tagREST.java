@@ -180,8 +180,8 @@ public class tagREST {
             }
 
             obj.put("tags", tags);
-            
-            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+                                // obj
+            return Response.ok(tags.toString(), MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
