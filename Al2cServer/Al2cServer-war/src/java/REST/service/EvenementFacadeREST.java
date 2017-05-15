@@ -1,14 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package REST.service;
 
 import Entities.Evenement;
+import Entities.Invitation;
 import Exception.notFoundEvenementException;
 import Metier.IgestionEvenement;
 import Entities.util.enumEtatEvenement;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -93,6 +90,39 @@ public class EvenementFacadeREST {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
+    
+    @GET
+    @Path("{id}/getEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEvenement(@QueryParam("token") int id,
+            @PathParam("idEvenement") Integer idEvenement) {
+        try {
+            Evenement e = gE.afficherEvenement(idEvenement, id);
+
+            JSONObject obj = new JSONObject();
+            obj.put("id", e.getId());
+            obj.put("etat", e.getEtatEvenement());
+            obj.put("intitule", e.getIntitule());
+            obj.put("description", e.getDescription());
+            obj.put("dateDebut", e.getDateDebut());
+            obj.put("dateFin", e.getDateFin());
+            obj.put("lieu", e.getLieu()); // TODO table lieu
+            obj.put("nbInvites", e.getInvitationCollection().size());
+            obj.put("nbPlaces", e.getNombreInvites());
+            obj.put("message", e.getMessageInvitation());
+            int nbPresents = 0;
+            for (Invitation i : e.getInvitationCollection()) {
+                if (i.getPresence())
+                    nbPresents++;
+            }
+            obj.put("nbPresents", nbPresents);
+            
+            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
 
     @POST
     @Path("creerEvenement")
