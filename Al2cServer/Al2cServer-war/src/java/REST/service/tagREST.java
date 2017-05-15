@@ -135,7 +135,7 @@ public class tagREST {
     
     
     
-    @GET // à la place de delete parce que delete ne fonctionne pas 
+    @GET 
     @Path("{idTag}/getListeContactByTag")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getListeContactsByTag(@QueryParam("token") int id, @PathParam("idTag") Integer idTag) {
@@ -160,6 +160,34 @@ public class tagREST {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
+    
+        
+    @GET 
+    @Path("{idContact}/getListTagsByContact")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeTagsByContact(@QueryParam("token") int id, @PathParam("idContact") Integer idContact) {
+        try {
+            List<Tag> lesTags = gT.getListeTagByContact(id, idContact);
+           
+            JSONArray tags = new JSONArray();
+            JSONObject obj = new JSONObject();
+
+            for (Tag t : lesTags) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", t.getId());
+                tempo.put("libelle", t.getLibelle());
+                tags.put(tempo);
+            }
+
+            obj.put("tags", tags);
+            
+            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    
     
 
 }

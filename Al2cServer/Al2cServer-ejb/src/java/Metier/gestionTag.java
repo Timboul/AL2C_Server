@@ -339,4 +339,37 @@ public class gestionTag implements IgestionTag {
             throw new unknowUserIdException();
         }
     }
+    /**
+     * Retourne la liste des tags d'un contacts 
+     * @param idUser
+     * @param idContact
+     * @return
+     * @throws noTagsFoundException
+     * @throws noContactExistsException
+     * @throws unknowUserIdException 
+     */
+     @Override
+    public List<Tag> getListeTagByContact(int idUser, int idContact)
+            throws noTagsFoundException, noContactExistsException, unknowUserIdException {
+
+        try {
+            // on vérifie que le tag existe bien
+            if (!isContactExistsOnUserListOfContacts(idUser, idContact)) {
+                throw new noContactExistsException();
+            }
+                   
+            List<Tag> tags = (List<Tag>) cF.find(idContact).getTagCollection();
+            
+            if(!tags.isEmpty()){
+                 return tags;
+            }
+
+            throw new noTagsFoundException();
+
+        } catch (Exception e) {
+            throw new unknowUserIdException();
+        }
+    }
+    
+    
 }
