@@ -250,3 +250,9 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/Al2cServer/Al2cServer-ejb/build
+/Al2cServer/build/
+/Al2cServer/Al2cServer-war/build/
+/Al2cServer/Al2cServer-ejb/dist/
+/Al2cServer/dist/
+/Al2cServer/Al2cServer-war/dist/

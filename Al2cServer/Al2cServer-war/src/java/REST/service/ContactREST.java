@@ -114,6 +114,33 @@ public class ContactREST {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+    
+    @GET
+    @Path("{idContact}/getCanaux")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response afficherCanaux(@QueryParam("token") int id,
+            @PathParam("idContact") Integer idContact) {
+        try {
+            Contact leContact = gestionContact.afficherContact(idContact, id);
+            JSONArray canaux = new JSONArray();
+            JSONObject obj = new JSONObject();
+            
+            for (Canal leCanal : leContact.getCanalCollection()) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", leCanal.getId());
+                tempo.put("typeCanal", leCanal.getTypeCanal());
+                tempo.put("valeur", leCanal.getValeur());
+                
+                canaux.put(tempo);
+            }
+            obj.put("canaux", canaux);
+                    
+            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (noContactExistsException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
     @PUT
     @Path("{idContact}/modifierContact")
