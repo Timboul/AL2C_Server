@@ -159,7 +159,6 @@ public class tagREST {
         }
     }
     
-        
     @GET 
     @Path("{idContact}/getListTagsByContact")
     @Produces(MediaType.APPLICATION_JSON)
@@ -185,7 +184,29 @@ public class tagREST {
         }
     }
     
-    
-    
+    @GET 
+    @Path("{idContact}/getInvertListTagsByContact")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getInvertListeTagsByContact(@QueryParam("token") int id, @PathParam("idContact") Integer idContact) {
+        try {
+            List<Tag> lesTags = gT.getInvertListeTagByContact(id, idContact);
+           
+            JSONArray tags = new JSONArray();
+            JSONObject obj = new JSONObject();
+
+            for (Tag t : lesTags) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", t.getId());
+                tempo.put("libelle", t.getLibelle());
+                tags.put(tempo);
+            }
+
+            obj.put("tags", tags);
+                                // obj
+            return Response.ok(tags.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
 
 }

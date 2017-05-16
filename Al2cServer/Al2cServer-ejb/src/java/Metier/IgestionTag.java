@@ -40,8 +40,10 @@ public interface IgestionTag {
     public Collection<Contact> getListeContactByTag(int idUser, int idTag) 
             throws noTagsFoundException, noContactExistsException, unknowUserIdException;
     
-    
-     public List<Tag> getListeTagByContact(int idUser, int idContact)
+    public List<Tag> getListeTagByContact(int idUser, int idContact)
+            throws noTagsFoundException, noContactExistsException, unknowUserIdException;
+     
+    public List<Tag> getInvertListeTagByContact(int idUser, int idContact)
             throws noTagsFoundException, noContactExistsException, unknowUserIdException;
     
 }

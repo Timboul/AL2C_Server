@@ -16,6 +16,7 @@ import Exception.noTagsFoundException;
 import Exception.tagAlreadyExistsException;
 import Exception.unknowUserIdException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -370,6 +371,32 @@ public class gestionTag implements IgestionTag {
             throw new unknowUserIdException();
         }
     }
-    
+
+    @Override
+    public List<Tag> getInvertListeTagByContact(int idUser, int idContact) throws noTagsFoundException, noContactExistsException, unknowUserIdException {
+        try {
+            // on vérifie que le tag existe bien
+            if (!isContactExistsOnUserListOfContacts(idUser, idContact)) {
+                throw new noContactExistsException();
+            }
+                   
+            List<Tag> tagsContact = (List<Tag>) cF.find(idContact).getTagCollection();
+            List<Tag> tags = tF.findAll();
+            Iterator<Tag> iterator = tags.iterator();
+            while(iterator.hasNext()){
+                Tag currentTag = iterator.next();
+                for (Tag t: tagsContact) {
+                    if(currentTag.getId() == t.getId())
+                        iterator.remove();
+                }
+            }            
+            if(!tags.isEmpty())
+                 return tags;
+
+            throw new noTagsFoundException();
+        } catch (Exception e) {
+            throw new unknowUserIdException();
+        }
+    }
     
 }
