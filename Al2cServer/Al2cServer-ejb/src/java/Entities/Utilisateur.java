@@ -76,9 +76,6 @@ public class Utilisateur implements Serializable {
     private Collection<Tag> tagCollection;
     
     @OneToMany(mappedBy = "utilisateurId")
-    private Collection<Message> messageCollection;
-    
-    @OneToMany(mappedBy = "utilisateurId")
     private Collection<Evenement> evenementCollection;
 
     public Utilisateur() {
@@ -152,15 +149,6 @@ public class Utilisateur implements Serializable {
 
     public void setTagCollection(Collection<Tag> tagCollection) {
         this.tagCollection = tagCollection;
-    }
-
-    @XmlTransient
-    public Collection<Message> getMessageCollection() {
-        return messageCollection;
-    }
-
-    public void setMessageCollection(Collection<Message> messageCollection) {
-        this.messageCollection = messageCollection;
     }
 
     @XmlTransient
