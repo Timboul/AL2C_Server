@@ -37,11 +37,10 @@ public class gestionContact implements IgestionContact {
     public List<Contact> getListeContacts(int idUtilisateur)
             throws noContactExistsException, unknowUserIdException {
         try {
-            Utilisateur u = utilisateurFacade.find(idUtilisateur);
-            if (u.getContactCollection().isEmpty())
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
+            if (utilisateur.getContactCollection().isEmpty())
                 throw new noContactExistsException();
-
-            return (List<Contact>) u.getContactCollection();
+            return (List<Contact>) utilisateur.getContactCollection();
         } catch (Exception e) {
             throw new unknowUserIdException();
         }
@@ -52,12 +51,12 @@ public class gestionContact implements IgestionContact {
             throws notFoundUtilisateurException {
         // vérifier qu'aucun des champs n'est vide
         try {
-            Utilisateur u = utilisateurFacade.find(idUtilisateur);
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
 
             Contact contact = new Contact();
             contact.setNom(nom);
             contact.setPrenom(prenom);
-            contact.setUtilisateurId(u);
+            contact.setUtilisateurId(utilisateur);
             
             contactFacade.create(contact);
             return contact.getId();
@@ -109,13 +108,9 @@ public class gestionContact implements IgestionContact {
         try {
             List<Contact> contacts = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
-           
-            for(Contact c: contacts){
-                if(c.getId().equals(idContact))
-                    return true;
-            }
-          return false;
-            
+            for(Contact contact: contacts)
+                return contact.getId().equals(idContact);
+            return false;
         } catch (Exception e) {
             return false;
         }

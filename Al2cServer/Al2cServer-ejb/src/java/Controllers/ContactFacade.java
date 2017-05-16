@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Controllers;
 
 import Entities.Contact;
@@ -11,8 +6,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- *
+ * Façade des contacts
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Stateless
 public class ContactFacade extends AbstractFacade<Contact> {

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Controllers;
 
 import Entities.Utilisateur;
@@ -11,8 +6,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- *
+ * Façade des utilisateurs
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Stateless
 public class UtilisateurFacade extends AbstractFacade<Utilisateur> {
@@ -30,35 +27,38 @@ public class UtilisateurFacade extends AbstractFacade<Utilisateur> {
     }
 
     /**
-     * Méthode d'authentification d'un utilisateur La requête appelé ci dessous
+     * Méthode d'authentification d'un utilisateur. La requête appelé ci-dessous
      * est écrite dans l'entité utilisateur
-     *
-     * @param mail
-     * @param mdp
-     * @return id de l'utilisateur
+     * @param mail Adresse mail de l'utilisateur
+     * @param motDePasse Mot de passe de l'utilisateur
+     * @return Retourne l'identifiant de l'utilisateur
      */
-    public int authentification(String mail, String mdp) {
-        //System.out.println(mail+" "+mdp);
+    public int authentification(String mail, String motDePasse) {
         try {
-            Utilisateur u = em.createNamedQuery("Utilisateur.findByMailAndMotDePasse", Utilisateur.class)
+            Utilisateur utiliateur = em
+                    .createNamedQuery("Utilisateur.findByMailAndMotDePasse",
+                            Utilisateur.class)
                     .setParameter("adresseMail", mail)
-                    .setParameter("motDePasse", mdp)
+                    .setParameter("motDePasse", motDePasse)
                     .getSingleResult();
-            System.out.println("ok");
-            return u.getId();
+            return utiliateur.getId();
         } catch (Exception e) {
-          //  System.out.println(e.getCause());
             return -1;
         }
-
     }
 
+    /**
+     * Informe de l'existance d'un mail dans la base de données
+     * @param mail Adresse mail de l'utilisateur
+     * @return Retourne true si le mail existe déja
+     *         sinon retourne false
+     */
     public boolean isMailExists(String mail) {
         try {
-            Utilisateur u = (Utilisateur) em.createNamedQuery("Utilisateur.findByAdresseMail")
+            Utilisateur utilisateur = (Utilisateur) em
+                    .createNamedQuery("Utilisateur.findByAdresseMail")
                     .setParameter("adresseMail", mail)
                     .getSingleResult();
-            
             return true;
         }catch(Exception e){
             return false;

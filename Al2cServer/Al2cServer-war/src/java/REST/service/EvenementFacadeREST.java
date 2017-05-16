@@ -50,7 +50,6 @@ public class EvenementFacadeREST {
                     tempo.put("intitule", e.getIntitule());
                     tempo.put("dateDebut", e.getDateDebut());
                     tempo.put("dateFin", e.getDateFin());
-                    tempo.put("lieu", e.getLieu()); // TODO table lieu
                     tempo.put("nbInvites", e.getInvitationCollection().size());
                     tempo.put("nbPlaces", e.getNombreInvites());
                     int nbPresents = 0;
@@ -59,6 +58,10 @@ public class EvenementFacadeREST {
                             nbPresents++;
                     }
                     tempo.put("nbPresents", nbPresents);
+                    tempo.put("adresse", e.getLieuId().getAdresse());
+                    tempo.put("complement", e.getLieuId().getComplement());
+                    tempo.put("codePostal", e.getLieuId().getCodePostal());
+                    tempo.put("ville", e.getLieuId().getVille());
 
                     events.put(tempo);
                 }
@@ -92,7 +95,6 @@ public class EvenementFacadeREST {
                     tempo.put("intitule", e.getIntitule());
                     tempo.put("dateDebut", e.getDateDebut());
                     tempo.put("dateFin", e.getDateFin());
-                    tempo.put("lieu", e.getLieu()); // TODO table lieu
                     tempo.put("nbInvites", e.getInvitationCollection().size());
                     tempo.put("nbPlaces", e.getNombreInvites());
                     int nbPresents = 0;
@@ -127,8 +129,6 @@ public class EvenementFacadeREST {
             obj.put("description", e.getDescription());
             obj.put("dateDebut", e.getDateDebut());
             obj.put("dateFin", e.getDateFin());
-            obj.put("lieu", e.getLieu()); // TODO table lieu
-                        
             obj.put("nbInvites", e.getInvitationCollection().size());
             obj.put("nbPlaces", e.getNombreInvites());
             obj.put("message", e.getMessageInvitation());
@@ -164,7 +164,7 @@ public class EvenementFacadeREST {
 
             // int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg)
             gE.creationEvenement(pid, obj.getString("intitule"), obj.getString("description"),
-                    obj.getString("dateDebut"), dateFin, obj.getString("lieu"), obj.getInt("nombreInvite"), obj.getString("message"));
+                    obj.getString("dateDebut"), dateFin, obj.getInt("nombreInvite"), obj.getString("message"));
 
             return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
@@ -191,7 +191,7 @@ public class EvenementFacadeREST {
 
             // int idEvent, int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg
             gE.modifierEvenement(idEvent, pid, obj.getString("intitule"), obj.getString("description"),
-                    obj.getString("dateDebut"), dateFin, obj.getString("lieu"), obj.getInt("nombreInvite"), obj.getString("message"));
+                    obj.getString("dateDebut"), dateFin, obj.getInt("nombreInvite"), obj.getString("message"));
 
             return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {

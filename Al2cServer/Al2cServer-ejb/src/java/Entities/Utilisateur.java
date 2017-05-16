@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Entities;
 
 import java.io.Serializable;
@@ -24,8 +19,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
+ * Entité des utilisateurs
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Entity
 @Table(name = "utilisateur")
@@ -41,37 +38,46 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Utilisateur implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
     @Column(name = "nom")
     private String nom;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
     @Column(name = "prenom")
     private String prenom;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 70)
     @Column(name = "adresse_mail")
     private String adresseMail;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 70)
     @Column(name = "mot_de_passe")
     private String motDePasse;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "utilisateurId")
     private Collection<Contact> contactCollection;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "utilisateurId")
     private Collection<Tag> tagCollection;
+    
     @OneToMany(mappedBy = "utilisateurId")
     private Collection<Message> messageCollection;
+    
     @OneToMany(mappedBy = "utilisateurId")
     private Collection<Evenement> evenementCollection;
 

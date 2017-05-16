@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Entities;
 
 import java.io.Serializable;
@@ -30,8 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
+ * Entité des evenements
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Entity
 @Table(name = "evenement")
@@ -47,44 +44,54 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Evenement implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "intitule")
     private String intitule;
+    
     @Lob
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
+    
     @Size(max = 8)
     @Column(name = "etat_evenement")
     private String etatEvenement;
+    
     @Column(name = "date_debut")
     @Temporal(TemporalType.DATE)
     private Date dateDebut;
+    
     @Column(name = "date_fin")
     @Temporal(TemporalType.DATE)
     private Date dateFin;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "lieu")
-    private String lieu;
+    
     @Column(name = "nombre_invites")
     private Integer nombreInvites;
+    
     @Lob
     @Size(max = 65535)
     @Column(name = "message_invitation")
     private String messageInvitation;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "evenement")
     private Collection<Invitation> invitationCollection;
+    
     @JoinColumn(name = "utilisateur_id", referencedColumnName = "id")
     @ManyToOne
     private Utilisateur utilisateurId;
+    
+    @JoinColumn(name = "lieu_id", referencedColumnName = "id")
+    @ManyToOne
+    private Lieu lieuId;
 
     public Evenement() {
     }
@@ -146,14 +153,6 @@ public class Evenement implements Serializable {
         this.dateFin = dateFin;
     }
 
-    public String getLieu() {
-        return lieu;
-    }
-
-    public void setLieu(String lieu) {
-        this.lieu = lieu;
-    }
-
     public Integer getNombreInvites() {
         return nombreInvites;
     }
@@ -185,6 +184,14 @@ public class Evenement implements Serializable {
 
     public void setUtilisateurId(Utilisateur utilisateurId) {
         this.utilisateurId = utilisateurId;
+    }
+    
+    public Lieu getLieuId() {
+        return lieuId;
+    }
+
+    public void setLieuId(Lieu lieuId) {
+        this.lieuId = lieuId;
     }
 
     @Override

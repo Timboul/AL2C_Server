@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Metier;
 
 import Controllers.UtilisateurFacade;
@@ -14,97 +9,66 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 /**
+ * Implémentation de la gestion des utilisateurs
  *
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Stateless
 public class gestionUtilisateur implements IgestionUtilisateur {
 
     @EJB
-    private UtilisateurFacade uf;
+    private UtilisateurFacade utilisateurFacade;
 
-    /**
-     * Créer un utilisateur dans le cas ou son mailn'existe pas déjà en base 
-     * @param nom
-     * @param prenom
-     * @param mail
-     * @param mdp
-     * @throws mailAlreadyUsedException 
-     */
     @Override
-    public void inscriptionClient(String nom, String prenom, String mail, String mdp) throws mailAlreadyUsedException {
-
-        Utilisateur u = new Utilisateur();
-        u.setNom(nom);
-        u.setPrenom(prenom);
-        u.setAdresseMail(mail);
-        u.setMotDePasse(mdp);
-
-        if (uf.isMailExists(mail)) {
+    public void inscriptionClient(String nom, String prenom, String mail,
+            String motDePasse) throws mailAlreadyUsedException {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(nom);
+        utilisateur.setPrenom(prenom);
+        utilisateur.setAdresseMail(mail);
+        utilisateur.setMotDePasse(motDePasse);
+        if (utilisateurFacade.isMailExists(mail))
             throw new mailAlreadyUsedException();
-        }
-        uf.create(u);
+        utilisateurFacade.create(utilisateur);
     }
 
-    /**
-     * Authentifie un utilisateur 
-     * @param mail
-     * @param mdp
-     * @return l'id utilisateur 
-     * @throws failAuthentificationException 
-     */
     @Override
-    public int authentificationClient(String mail, String mdp) throws failAuthentificationException {
-        //TODO fixer token ici 
-        int uId = uf.authentification(mail, mdp);
-        if ( uId == -1) {
+    public int authentificationClient(String mail, String motDePasse)
+            throws failAuthentificationException {
+        int authentification = utilisateurFacade
+                .authentification(mail, motDePasse);
+        if (authentification == -1)
             throw new failAuthentificationException();
-        }
-        return uId;
+        return authentification;
     }
 
-    /**
-     * Retourne l'utilisateur si il existe bien 
-     * @param id
-     * @return
-     * @throws notFoundUtilisateurException 
-     */
     @Override
-    public Utilisateur afficherInformationsCompteUtilisateur(int id) throws notFoundUtilisateurException {
+    public Utilisateur afficherInformationsCompteUtilisateur(int idUtilisateur)
+            throws notFoundUtilisateurException {
         try {
-            return uf.find(id);
+            return utilisateurFacade.find(idUtilisateur);
         } catch (Exception e) {
             throw new notFoundUtilisateurException();
         }
     }
 
-    /**
-     * modifie les informations de l'utilisateur 
-     * @param id
-     * @param nom
-     * @param prenom
-     * @param mail
-     * @param mdp
-     * @throws notFoundUtilisateurException 
-     */
     @Override
-    public void modifierInformationsCompteUtilisateur(int id, String nom, String prenom, String mail, String mdp) throws notFoundUtilisateurException {
+    public void modifierInformationsCompteUtilisateur(int idUtilisateur,
+            String nom, String prenom, String mail, String motDePasse)
+            throws notFoundUtilisateurException {
         try {
-            Utilisateur u = uf.find(id);
-            u.setNom(nom);
-            u.setPrenom(prenom);
-            u.setMotDePasse(mdp);
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
+            utilisateur.setNom(nom);
+            utilisateur.setPrenom(prenom);
+            utilisateur.setMotDePasse(motDePasse);
             
-            if(!u.getAdresseMail().equals(mail))
-                if(!uf.isMailExists(mail))
-                u.setAdresseMail(mail);
+            if(!utilisateur.getAdresseMail().equals(mail))
+                if(!utilisateurFacade.isMailExists(mail))
+                    utilisateur.setAdresseMail(mail);
             
-            
-            System.out.println(mail);
-            uf.edit(u);
-           
+            utilisateurFacade.edit(utilisateur);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new notFoundUtilisateurException();
         }
     }

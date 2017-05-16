@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Entities;
 
 import java.io.Serializable;
@@ -17,8 +12,10 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * Entité des invitations
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Entity
 @Table(name = "invitation")
@@ -27,20 +24,21 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Invitation.findAll", query = "SELECT i FROM Invitation i")
     , @NamedQuery(name = "Invitation.findByEvenementId", query = "SELECT i FROM Invitation i WHERE i.invitationPK.evenementId = :evenementId")
     , @NamedQuery(name = "Invitation.findByContactId", query = "SELECT i FROM Invitation i WHERE i.invitationPK.contactId = :contactId")
-    , @NamedQuery(name = "Invitation.findByPresence", query = "SELECT i FROM Invitation i WHERE i.presence = :presence")
-    , @NamedQuery(name = "Invitation.findByNombreParticipants", query = "SELECT i FROM Invitation i WHERE i.nombreParticipants = :nombreParticipants")})
+    , @NamedQuery(name = "Invitation.findByPresence", query = "SELECT i FROM Invitation i WHERE i.presence = :presence")})
 public class Invitation implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @EmbeddedId
     protected InvitationPK invitationPK;
+    
     @Column(name = "presence")
     private Boolean presence;
-    @Column(name = "nombre_participants")
-    private Integer nombreParticipants;
+    
     @JoinColumn(name = "evenement_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Evenement evenement;
+    
     @JoinColumn(name = "contact_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Contact contact;
@@ -70,14 +68,6 @@ public class Invitation implements Serializable {
 
     public void setPresence(Boolean presence) {
         this.presence = presence;
-    }
-
-    public Integer getNombreParticipants() {
-        return nombreParticipants;
-    }
-
-    public void setNombreParticipants(Integer nombreParticipants) {
-        this.nombreParticipants = nombreParticipants;
     }
 
     public Evenement getEvenement() {

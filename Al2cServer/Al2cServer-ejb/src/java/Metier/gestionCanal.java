@@ -36,14 +36,14 @@ public class gestionCanal implements IgestionCanal {
         try {
             if (!isContactExistsInUtilisateurContacts(idContact, idUtilisateur))
                 throw new noContactExistsException();
-            Contact c = contactFacade.find(idContact);
+            Contact contact = contactFacade.find(idContact);
             
             Canal canal = new Canal();
             canal.setValeur(valeur);
             System.out.println("avant");
             canal.setTypeCanal(TypeCanal.valueOf(typeCanal).toString());
             System.out.println("après");
-            canal.setContactId(c);
+            canal.setContactId(contact);
 
             canalFacade.create(canal);
         } catch (Exception e) {
@@ -93,12 +93,14 @@ public class gestionCanal implements IgestionCanal {
     private boolean isCanalExistsInUtilisateurCanaux(int idCanal, int idContact,
             int idUtilisateur) {
         try {
-            List<Contact> contact = (List<Contact>) utilisateurFacade
+            List<Contact> contacts = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
-            if (contact.stream().anyMatch((e) -> (e.getId().equals(idContact)))) {
+            if (contacts.stream()
+                    .anyMatch((e) -> (e.getId().equals(idContact)))) {
                 List<Canal> canal = (List<Canal>) contactFacade
                     .find(idContact).getCanalCollection();
-                return canal.stream().anyMatch((e) -> (e.getId().equals(idCanal)));
+                return canal.stream()
+                        .anyMatch((e) -> (e.getId().equals(idCanal)));
             }
             return false;
         } catch (Exception e) {
@@ -116,9 +118,10 @@ public class gestionCanal implements IgestionCanal {
     private boolean isContactExistsInUtilisateurContacts(int idContact,
             int idUtilisateur) {
         try {
-            List<Contact> contact = (List<Contact>) utilisateurFacade
+            List<Contact> contacts = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
-            return contact.stream().anyMatch((e) -> (e.getId().equals(idContact)));
+            return contacts.stream()
+                    .anyMatch((e) -> (e.getId().equals(idContact)));
         } catch (Exception e) {
             return false;
         }

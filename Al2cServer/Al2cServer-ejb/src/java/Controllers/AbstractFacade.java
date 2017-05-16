@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Controllers;
 
 import java.util.Iterator;
@@ -15,8 +10,10 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 /**
- *
+ * Classe abstraite des façades
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 public abstract class AbstractFacade<T> {
 
@@ -37,7 +34,6 @@ public abstract class AbstractFacade<T> {
             while (iterator.hasNext()) {
                 ConstraintViolation<T> cv = iterator.next();
                 System.err.println("THHHHHHHHHHHHHHHHHO3" + "." + cv.getPropertyPath() + " " + cv.getMessage());
-
             }
         } else {
             getEntityManager().persist(entity);
@@ -55,7 +51,6 @@ public abstract class AbstractFacade<T> {
             while (iterator.hasNext()) {
                 ConstraintViolation<T> cv = iterator.next();
                 System.err.println("THHHHHHHHHHHHHHHHHO3" + "." + cv.getPropertyPath() + " " + cv.getMessage());
-
             }
         } else {
             getEntityManager().merge(entity);

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Metier;
 
 import Entities.util.enumEtatEvenement;
@@ -18,146 +13,133 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 /**
+ * Implémentation de la gestion des évènements
  *
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Stateless
 public class gestionEvenement implements IgestionEvenement {
 
     @EJB
-    private EvenementFacade eF;
+    private EvenementFacade evenementFacade;
 
     @EJB
-    private UtilisateurFacade uF;
-
-  /*  public enum etat {
-        A_VENIR, EN_COURS, PASSE, ANNULE
-    };*/
+    private UtilisateurFacade utilisateurFacade;
 
     @Override
-    public List<Evenement> getListeEvenements(int idUser) throws notFoundEvenementException {
-
+    public List<Evenement> getListeEvenements(int idUtilisateur)
+            throws notFoundEvenementException {
         try {
-            Utilisateur u = uF.find(idUser);
-            if (u.getEvenementCollection().isEmpty()) {
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
+            if (utilisateur.getEvenementCollection().isEmpty())
                 throw new notFoundEvenementException();
-            }
-
-            return (List<Evenement>) u.getEvenementCollection();
+            return (List<Evenement>) utilisateur.getEvenementCollection();
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
     }
 
     @Override
-    public void creationEvenement(int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg)
+    public void creationEvenement(int idUtilisateur, String intitule, 
+            String description, String dateDebut, String dateFin, 
+            int nombreInvite, String message)
             throws notFoundUtilisateurException {
-
         // Si controles non effectué sur le coté client vérifier date > datenow 
         // vérifier qu'aucun des champs n'est vides
         try {
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
 
-            Utilisateur u = uF.find(idUser);
+            Evenement evenement = new Evenement();
+            evenement.setIntitule(intitule);
+            evenement.setDescription(description);
+            evenement.setDateDebut(Date.valueOf(dateDebut));
+            if (dateFin != null)
+                evenement.setDateFin(Date.valueOf(dateFin));
+            evenement.setNombreInvites(nombreInvite);
+            evenement.setMessageInvitation(message);
+            evenement.setUtilisateurId(utilisateur);
+            evenement.setEtatEvenement(enumEtatEvenement.A_VENIR.toString());
 
-            Evenement event = new Evenement();
-            event.setIntitule(intitule);
-            event.setDescription(description);
-            event.setDateDebut(Date.valueOf(dateDebut));
-
-            if (dateFin != null) {
-                event.setDateFin(Date.valueOf(dateFin));
-            }
-
-            event.setLieu(lieu);
-            event.setNombreInvites(nbInvite);
-            event.setMessageInvitation(msg);
-            event.setUtilisateurId(u);
-
-            event.setEtatEvenement(enumEtatEvenement.A_VENIR.toString());
-
-            eF.create(event);
-
+            evenementFacade.create(evenement);
         } catch (Exception e) {
-            System.out.println("test " + e.getMessage());
             throw new notFoundUtilisateurException();
         }
-
     }
 
     @Override
-    public void modifierEvenement(int idEvent, int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg)
+    public void modifierEvenement(int idEvenement, int idUtilisateur,
+            String intitule, String description, String dateDebut,
+            String dateFin, int nombreInvite, String message)
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
         try {
-            
-             if (!isEventExistsOnUserEvents(idEvent, idUser)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
             
-            Evenement event = eF.find(idEvent);
+            Evenement evenement = evenementFacade.find(idEvenement);
+            evenement.setIntitule(intitule);
+            evenement.setDescription(description);
+            evenement.setDateDebut(Date.valueOf(dateDebut));
+            if (dateFin != null)
+                evenement.setDateFin(Date.valueOf(dateFin));
+            evenement.setNombreInvites(nombreInvite);
+            evenement.setMessageInvitation(message);
 
-            event.setIntitule(intitule);
-            event.setDescription(description);
-            event.setDateDebut(Date.valueOf(dateDebut));
-
-            if (dateFin != null) {
-                event.setDateFin(Date.valueOf(dateFin));
-            }
-
-            event.setLieu(lieu);
-            event.setNombreInvites(nbInvite);
-            event.setMessageInvitation(msg);
-
-            eF.edit(event);
-
+            evenementFacade.edit(evenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
     }
 
     @Override
-    public Evenement afficherEvenement(int idEvent, int idUser) throws notFoundEvenementException {
+    public Evenement afficherEvenement(int idEvenement, int idUtilisateur)
+            throws notFoundEvenementException {
         try {
-            if (!isEventExistsOnUserEvents(idEvent, idUser)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
-            return eF.find(idEvent);
+            return evenementFacade.find(idEvenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
     }
 
     @Override
-    public void annulerEvenement(int idEvent, int idUser) throws notFoundEvenementException {
+    public void annulerEvenement(int idEvenement, int idUtilisateur)
+            throws notFoundEvenementException {
         // on vérifie que l'user à bien cet évenement 
         try {
-            if (!isEventExistsOnUserEvents(idEvent, idUser)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
 
-            Evenement event = eF.find(idEvent);
-            event.setEtatEvenement(enumEtatEvenement.ANNULE.toString());
+            Evenement evenement = evenementFacade.find(idEvenement);
+            evenement.setEtatEvenement(enumEtatEvenement.ANNULE.toString());
 
-            eF.edit(event);
-
+            evenementFacade.edit(evenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
     }
 
-// retour vrai si existe 
-    private boolean isEventExistsOnUserEvents(int idEvent, int idUser) {
+    /**
+     * Vérifie l'appartenance de l'évènement à l'utilisateur
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @return true si l'évènement appartient à l'utilisateur
+     *         sinon retourne false
+     */
+    private boolean isEventExistsOnUserEvents(int idEvenement,
+            int idUtilisateur) {
         try {
-            List<Evenement> events = (List<Evenement>) uF.find(idUser).getEvenementCollection();
-
-            for (Evenement e : events) {
-                if (e.getId().equals(idEvent)) {
-                    return true;
-                }
-            }
-             return false;
+            List<Evenement> evenements = (List<Evenement>)
+                    utilisateurFacade.find(idUtilisateur)
+                    .getEvenementCollection();
+            for (Evenement evenement : evenements)
+                return evenement.getId().equals(idEvenement);
+            return false;
         } catch (Exception e) {
             return false;
         }
     }
+    
 }

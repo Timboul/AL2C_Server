@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Entities;
 
 import java.io.Serializable;
@@ -12,8 +7,10 @@ import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * Entité de la clé primaire des invitations
+ * 
  * @author fez
+ * @author Alexandre Bertrand
  */
 @Embeddable
 public class InvitationPK implements Serializable {
@@ -22,6 +19,7 @@ public class InvitationPK implements Serializable {
     @NotNull
     @Column(name = "evenement_id")
     private int evenementId;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "contact_id")

@@ -1,6 +1,5 @@
 package Metier;
 
-import Entities.util.TypeCanal;
 import Exception.noCanalFoundException;
 import Exception.notFoundUtilisateurException;
 
@@ -13,10 +12,10 @@ public interface IgestionCanal {
     
     /**
      * Crée le canal dont l'identifiant est passé en paramètres
-     * @param idContact identifiant du contact
-     * @param idUtilisateur identifiant de l'utilisateur
-     * @param valeur valeur associée au canal
-     * @param typeCanal type de canal associé à la valeur
+     * @param idContact Identifiant du contact
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @param valeur Valeur associée au canal
+     * @param typeCanal Type de canal associé à la valeur
      * @throws notFoundUtilisateurException 
      */
     public void ajouterCanal(int idContact, int idUtilisateur, String valeur,
@@ -24,10 +23,10 @@ public interface IgestionCanal {
     
     /**
      * Modifie le canal dont l'identifiant est passé en paramètres
-     * @param idCanal identifiant du canal
-     * @param idUtilisateur identifiant de l'utilisateur
-     * @param valeur valeur associée au canal
-     * @param typeCanal type de canal associé à la valeur
+     * @param idCanal Identifiant du canal
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @param valeur Valeur associée au canal
+     * @param typeCanal Type de canal associé à la valeur
      * @throws noCanalFoundException 
      */
     public void modifierCanal(int idCanal, int idUtilisateur, String valeur,
@@ -35,8 +34,8 @@ public interface IgestionCanal {
     
     /**
      * Canal le canal dont l'identifiant est passé en paramètres
-     * @param idCanal identifiant du canal
-     * @param idUtilisateur identifiant de l'utilisateur
+     * @param idCanal Identifiant du canal
+     * @param idUtilisateur Identifiant de l'utilisateur
      * @throws noCanalFoundException 
      */
     public void supprimerCanal(int idCanal, int idUtilisateur)
