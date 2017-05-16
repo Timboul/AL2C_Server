@@ -91,7 +91,10 @@ public class ContactREST {
     public Response afficherContact(@QueryParam("token") int id,
             @PathParam("idContact") Integer idContact) {
         try {
+            
             Contact leContact = gestionContact.afficherContact(idContact, id);
+            System.out.println(leContact.getNom());
+            
             JSONObject obj = new JSONObject();
             obj.put("id", leContact.getId());
             obj.put("nom", leContact.getNom());
@@ -111,6 +114,7 @@ public class ContactREST {
             return Response.ok(obj.toString(), MediaType.APPLICATION_JSON)
                     .build();
         } catch (noContactExistsException e) {
+       
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
@@ -135,7 +139,7 @@ public class ContactREST {
             }
             obj.put("canaux", canaux);
                     
-            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON)
+            return Response.ok(canaux.toString(), MediaType.APPLICATION_JSON)
                     .build();
         } catch (noContactExistsException e) {
             return Response.status(Response.Status.NOT_FOUND).build();

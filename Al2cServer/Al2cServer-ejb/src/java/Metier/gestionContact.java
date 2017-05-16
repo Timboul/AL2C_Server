@@ -89,9 +89,10 @@ public class gestionContact implements IgestionContact {
         try {
             if (!isContactExistsInUtilisateurContacts(idContact, idUtilisateur))
                 throw new noContactExistsException();
-
+            System.out.println("Metier.gestionContact.afficherContact()");
             return contactFacade.find(idContact);
         } catch (Exception e) {
+            System.out.println("echec");
             throw new noContactExistsException();
         }
     }
@@ -106,10 +107,15 @@ public class gestionContact implements IgestionContact {
     private boolean isContactExistsInUtilisateurContacts(int idContact,
             int idUtilisateur) {
         try {
-            List<Contact> contact = (List<Contact>) utilisateurFacade
+            List<Contact> contacts = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
-
-            return contact.stream().anyMatch((e) -> (e.getId().equals(idContact)));
+           
+            for(Contact c: contacts){
+                if(c.getId().equals(idContact))
+                    return true;
+            }
+          return false;
+            
         } catch (Exception e) {
             return false;
         }
