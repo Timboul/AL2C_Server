@@ -4,8 +4,6 @@ import Entities.Utilisateur;
 import Exception.failAuthentificationException;
 import Exception.mailAlreadyUsedException;
 import Exception.notFoundUtilisateurException;
-import Metier.IgestionContact;
-import Metier.IgestionUtilisateur;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,6 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
+import Metier.IGestionContact;
+import Metier.IGestionUtilisateur;
 
 /**
  *
@@ -29,10 +29,10 @@ import org.json.*;
 public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
 
     @EJB//(name="Metier.IgestionUtilisateur")
-    private IgestionUtilisateur gU;
+    private IGestionUtilisateur gU;
     
     @EJB
-    private IgestionContact gC;
+    private IGestionContact gC;
 
     @POST
     @Path("inscription")

@@ -9,7 +9,6 @@ import Entities.Contact;
 import Entities.Tag;
 import Exception.noTagsFoundException;
 import Exception.unknowUserIdException;
-import Metier.IgestionTag;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -24,6 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
+import Metier.IGestionTag;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.json.*;
 public class tagREST {
 
     @EJB
-    private IgestionTag gT;
+    private IGestionTag gT;
 
     @GET
     @Path("afficherTags")
@@ -68,7 +68,6 @@ public class tagREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response CreerTag(@QueryParam("token") int id, String data) {
-
         try {
             JSONObject obj = new JSONObject(data);
 
@@ -78,7 +77,6 @@ public class tagREST {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-
     }
 
     @PUT

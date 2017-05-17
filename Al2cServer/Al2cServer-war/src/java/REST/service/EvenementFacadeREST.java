@@ -1,10 +1,10 @@
 package REST.service;
 
+import Entities.Contact;
 import Entities.Evenement;
 import Entities.Invitation;
 import Exception.notFoundEvenementException;
-import Metier.IgestionEvenement;
-import Entities.util.enumEtatEvenement;
+import Entities.util.EtatEvenement;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -18,6 +18,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
+import Metier.IGestionEvenement;
+import Metier.IGestionInvitation;
+import Metier.IGestionLieu;
 
 /**
  *
@@ -28,7 +31,13 @@ import org.json.*;
 public class EvenementFacadeREST {
 
     @EJB
-    private IgestionEvenement gE;
+    private IGestionEvenement gestionEvenement;
+    
+    @EJB
+    private IGestionLieu gestionLieu;
+    
+    @EJB
+    private IGestionInvitation gestionInvitation;
 
     @GET
     @Path("getListeEvenements")
@@ -36,14 +45,15 @@ public class EvenementFacadeREST {
     public Response getListeEvenements(@QueryParam("token") int pid) {
 
         try {
-            List<Evenement> lesEvents = gE.getListeEvenements(pid);
+            List<Evenement> lesEvents = gestionEvenement.getListeEvenements(pid);
 
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
 
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement().equals(enumEtatEvenement.PASSE.toString()) || 
-                    e.getEtatEvenement().equals(enumEtatEvenement.ANNULE.toString())) {
+                if (e.getEtatEvenement().equals(EtatEvenement.PASSE.toString()) || 
+                    e.getEtatEvenement().equals(EtatEvenement.ANNULE.toString()) || 
+                    e.getEtatEvenement().equals(EtatEvenement.EN_PREPARATION.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
@@ -79,16 +89,16 @@ public class EvenementFacadeREST {
     @Path("getListeEvenementsA_Venir")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getListeEvenementsA_Venir(@QueryParam("token") int pid) {
-
         try {
-            List<Evenement> lesEvents = gE.getListeEvenements(pid);
+            List<Evenement> lesEvents = gestionEvenement.getListeEvenements(pid);
 
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
 
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement().equals(enumEtatEvenement.A_VENIR.toString()) || 
-                    e.getEtatEvenement().equals(enumEtatEvenement.EN_COURS.toString())) {
+                if (e.getEtatEvenement().equals(EtatEvenement.A_VENIR.toString()) || 
+                    e.getEtatEvenement().equals(EtatEvenement.EN_COURS.toString()) || 
+                    e.getEtatEvenement().equals(EtatEvenement.EN_PREPARATION.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
@@ -120,7 +130,7 @@ public class EvenementFacadeREST {
     public Response getEvenement(@QueryParam("token") int id,
             @PathParam("id") Integer idEvenement) {
         try {
-            Evenement e = gE.afficherEvenement(idEvenement, id);
+            Evenement e = gestionEvenement.afficherEvenement(idEvenement, id);
 
             JSONObject obj = new JSONObject();
             obj.put("id", e.getId());
@@ -151,51 +161,97 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response creerEvenement(@QueryParam("token") int pid, String data) {
-        String dateFin = "";
+        String complement = null;
+        String dateFin = null;
         try {
-
             JSONObject obj = new JSONObject(data);
 
-            if (!obj.has("dateFin")) {
-                dateFin = null;
-            } else {
+            if (obj.has("complement"))
+                complement = obj.getString("complement");
+            if (obj.has("dateFin"))
                 dateFin = obj.getString("dateFin");
-            }
 
-            // int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg)
-            gE.creationEvenement(pid, obj.getString("intitule"), obj.getString("description"),
-                    obj.getString("dateDebut"), dateFin, obj.getInt("nombreInvite"), obj.getString("message"));
+            int idLieu = gestionLieu.ajouterLieu(obj.getString("adresse"),
+                    complement, obj.getString("codePostal"),
+                    obj.getString("ville"));
+            gestionEvenement.creationEvenement(pid, idLieu,
+                    obj.getString("intitule"), obj.getString("description"),
+                    obj.getString("dateDebut"), dateFin,
+                    obj.getInt("nombreInvite"));
 
-            return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @PUT
+    @Path("{id}/modifierEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modifierEvenement(@QueryParam("token") int pid,
+            @PathParam("id") Integer idEvent, String data) {
+        String complement = null;
+        String dateFin = null;
+        try {
+            JSONObject obj = new JSONObject(data);
+
+            if (obj.has("complement"))
+                complement = obj.getString("complement");
+            if (obj.has("dateFin"))
+                dateFin = obj.getString("dateFin");
+            
+            if (gestionEvenement.isEvenementEnPreparation(idEvent))
+                gestionLieu.modifierLieu(idEvent, pid, obj.getString("adresse"),
+                        complement, obj.getString("codePostal"),
+                        obj.getString("ville"));
+            gestionEvenement.modifierEvenement(idEvent, pid,
+                    obj.getString("intitule"), obj.getString("description"),
+                    obj.getString("dateDebut"), dateFin,
+                    obj.getInt("nombreInvite"));
+
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
-
-    @PUT
-    @Path("{id}/modifierEvenement")
+    
+    @GET
+    @Path("{id}/getListeInvites")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response modifierEvenement(@QueryParam("token") int pid, @PathParam("id") Integer idEvent, String data) {
-        String dateFin = "";
+    public Response getListeInvites(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
         try {
-
-            JSONObject obj = new JSONObject(data);
-
-            if (!obj.has("dateFin")) {
-                dateFin = null;
-            } else {
-                dateFin = obj.getString("dateFin");
+            System.err.println("coucou 1");
+            List<Contact> contactsInvites = gestionInvitation.getContactsInvites(idEvenement, id);
+            System.err.println("coucou 2");
+            List<Contact> contactsNotInvites = gestionInvitation.getContactsNonInvites(idEvenement, id);
+            System.err.println("coucou 3");
+            JSONArray cInvites = new JSONArray();
+            JSONArray cNonInvites = new JSONArray();
+            JSONObject obj = new JSONObject();
+            for (Contact contact: contactsInvites) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", contact.getId());
+                tempo.put("nom", contact.getNom());
+                tempo.put("prenom", contact.getPrenom());
+                cInvites.put(tempo);
             }
-
-            // int idEvent, int idUser, String intitule, String description, String dateDebut, String dateFin, String lieu, int nbInvite, String msg
-            gE.modifierEvenement(idEvent, pid, obj.getString("intitule"), obj.getString("description"),
-                    obj.getString("dateDebut"), dateFin, obj.getInt("nombreInvite"), obj.getString("message"));
-
-            return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            for (Contact contact: contactsNotInvites) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", contact.getId());
+                tempo.put("nom", contact.getNom());
+                tempo.put("prenom", contact.getPrenom());
+                cNonInvites.put(tempo);
+            }
+            
+            obj.put("contactsInvites", cInvites);
+            obj.put("contactsNonInvites", cNonInvites);
+            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
@@ -206,7 +262,7 @@ public class EvenementFacadeREST {
     public Response annulerEvenement(@QueryParam("token") int pid, @PathParam("id") Integer idEvent) {
         try {
             //TODO voir si on vérifie la valider du token ici
-            gE.annulerEvenement(idEvent, pid);
+            gestionEvenement.annulerEvenement(idEvent, pid);
 
             return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {

@@ -1,6 +1,8 @@
 package Controllers;
 
+import Entities.Contact;
 import Entities.Invitation;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,6 +26,19 @@ public class InvitationFacade extends AbstractFacade<Invitation> {
 
     public InvitationFacade() {
         super(Invitation.class);
+    }
+    
+    public List<Contact> getNotInvitedContacts(int idUtilisateur, int idEvenement) {
+        try {
+            return (List<Contact>) em
+                    .createNamedQuery("Invitation.findNotInvited")
+                    .setParameter("utilisateurId", idUtilisateur)
+                    .setParameter("evenementId", idEvenement).getResultList();
+        }catch(Exception e){
+            System.err.println("coucou");
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
     
 }

@@ -5,8 +5,6 @@ import Entities.Contact;
 import Entities.util.TypeCanal;
 import Exception.noContactExistsException;
 import Exception.unknowUserIdException;
-import Metier.IgestionCanal;
-import Metier.IgestionContact;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -21,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import Metier.IGestionCanal;
+import Metier.IGestionContact;
 
 /**
  * Contrôleur permettant la gestion des contacts de l'utilisateur
@@ -32,10 +32,10 @@ import org.json.JSONObject;
 public class ContactREST {
     
     @EJB
-    private IgestionContact gestionContact;
+    private IGestionContact gestionContact;
     
     @EJB
-    private IgestionCanal gestionCanal;
+    private IGestionCanal gestionCanal;
     
     @GET
     @Path("getContactsList")
