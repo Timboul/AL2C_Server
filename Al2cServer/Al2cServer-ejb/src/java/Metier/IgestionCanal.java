@@ -8,10 +8,10 @@ import Exception.notFoundUtilisateurException;
  *
  * @author Alexandre Bertrand
  */
-public interface IgestionCanal {
+public interface IGestionCanal {
     
     /**
-     * Crée le canal dont l'identifiant est passé en paramètres
+     * Crée un canal pour le contact dont l'identifiant est passé en paramètres
      * @param idContact Identifiant du contact
      * @param idUtilisateur Identifiant de l'utilisateur
      * @param valeur Valeur associée au canal
@@ -33,7 +33,7 @@ public interface IgestionCanal {
             String typeCanal) throws noCanalFoundException; 
     
     /**
-     * Canal le canal dont l'identifiant est passé en paramètres
+     * Supprime le canal dont l'identifiant est passé en paramètres
      * @param idCanal Identifiant du canal
      * @param idUtilisateur Identifiant de l'utilisateur
      * @throws noCanalFoundException 

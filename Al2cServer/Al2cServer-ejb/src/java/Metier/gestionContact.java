@@ -17,7 +17,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class gestionContact implements IgestionContact {
+public class GestionContact implements IGestionContact {
 
     @EJB
     private ContactFacade contactFacade;
@@ -109,7 +109,8 @@ public class gestionContact implements IgestionContact {
             List<Contact> contacts = (List<Contact>) utilisateurFacade
                 .find(idUtilisateur).getContactCollection();
             for(Contact contact: contacts)
-                return contact.getId().equals(idContact);
+                if (contact.getId().equals(idContact))
+                    return true;
             return false;
         } catch (Exception e) {
             return false;

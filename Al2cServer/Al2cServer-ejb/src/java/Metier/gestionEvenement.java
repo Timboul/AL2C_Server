@@ -1,9 +1,11 @@
 package Metier;
 
-import Entities.util.enumEtatEvenement;
+import Entities.util.EtatEvenement;
 import Controllers.EvenementFacade;
+import Controllers.LieuFacade;
 import Controllers.UtilisateurFacade;
 import Entities.Evenement;
+import Entities.Lieu;
 import Entities.Utilisateur;
 import Exception.notFoundEvenementException;
 import Exception.notFoundUtilisateurException;
@@ -19,13 +21,16 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class gestionEvenement implements IgestionEvenement {
+public class GestionEvenement implements IGestionEvenement {
 
     @EJB
     private EvenementFacade evenementFacade;
 
     @EJB
     private UtilisateurFacade utilisateurFacade;
+    
+    @EJB
+    private LieuFacade lieuFacade;
 
     @Override
     public List<Evenement> getListeEvenements(int idUtilisateur)
@@ -41,15 +46,16 @@ public class gestionEvenement implements IgestionEvenement {
     }
 
     @Override
-    public void creationEvenement(int idUtilisateur, String intitule, 
-            String description, String dateDebut, String dateFin, 
-            int nombreInvite, String message)
+    public void creationEvenement(int idUtilisateur, int idLieu,
+            String intitule, String description, String dateDebut,
+            String dateFin, int nombreInvite)
             throws notFoundUtilisateurException {
         // Si controles non effectué sur le coté client vérifier date > datenow 
         // vérifier qu'aucun des champs n'est vides
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-
+            Lieu lieu = lieuFacade.find(idLieu);
+            
             Evenement evenement = new Evenement();
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
@@ -57,9 +63,11 @@ public class gestionEvenement implements IgestionEvenement {
             if (dateFin != null)
                 evenement.setDateFin(Date.valueOf(dateFin));
             evenement.setNombreInvites(nombreInvite);
-            evenement.setMessageInvitation(message);
+            evenement.setMessageInvitation("TODO - Rédiger le message par" 
+                    + "défault ici");
             evenement.setUtilisateurId(utilisateur);
-            evenement.setEtatEvenement(enumEtatEvenement.A_VENIR.toString());
+            evenement.setEtatEvenement(EtatEvenement.A_VENIR.toString());
+            evenement.setLieuId(lieu);
 
             evenementFacade.create(evenement);
         } catch (Exception e) {
@@ -70,7 +78,7 @@ public class gestionEvenement implements IgestionEvenement {
     @Override
     public void modifierEvenement(int idEvenement, int idUtilisateur,
             String intitule, String description, String dateDebut,
-            String dateFin, int nombreInvite, String message)
+            String dateFin, int nombreInvite)
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
         try {
@@ -80,11 +88,30 @@ public class gestionEvenement implements IgestionEvenement {
             Evenement evenement = evenementFacade.find(idEvenement);
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
-            evenement.setDateDebut(Date.valueOf(dateDebut));
-            if (dateFin != null)
-                evenement.setDateFin(Date.valueOf(dateFin));
+            if (isEvenementEnPreparation(idEvenement)) {
+                evenement.setDateDebut(Date.valueOf(dateDebut));
+                if (dateFin != null)
+                    evenement.setDateFin(Date.valueOf(dateFin));
+            }
             evenement.setNombreInvites(nombreInvite);
-            evenement.setMessageInvitation(message);
+
+            evenementFacade.edit(evenement);
+        } catch (Exception e) {
+            throw new notFoundEvenementException();
+        }
+    }
+    
+    @Override
+    public void modifierMessageInvitation(int idEvenement, int idUtilisateur,
+            String message)
+            throws notFoundEvenementException {
+        // TODO notifier le robot du changement pour prévenir les invités 
+        try {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+                throw new notFoundEvenementException();
+            
+            Evenement evenement = evenementFacade.find(idEvenement);
+            evenement.setIntitule(message);
 
             evenementFacade.edit(evenement);
         } catch (Exception e) {
@@ -113,7 +140,7 @@ public class gestionEvenement implements IgestionEvenement {
                 throw new notFoundEvenementException();
 
             Evenement evenement = evenementFacade.find(idEvenement);
-            evenement.setEtatEvenement(enumEtatEvenement.ANNULE.toString());
+            evenement.setEtatEvenement(EtatEvenement.ANNULE.toString());
 
             evenementFacade.edit(evenement);
         } catch (Exception e) {
@@ -121,6 +148,19 @@ public class gestionEvenement implements IgestionEvenement {
         }
     }
 
+    @Override
+    public boolean isEvenementEnPreparation(int idEvenement) {
+        try {
+            Evenement evenement = evenementFacade.find(idEvenement);
+            if (evenement.getEtatEvenement() == EtatEvenement.EN_PREPARATION
+                    .toString())
+                return true;
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
     /**
      * Vérifie l'appartenance de l'évènement à l'utilisateur
      * @param idEvenement Identifiant de l'évènement
@@ -135,7 +175,8 @@ public class gestionEvenement implements IgestionEvenement {
                     utilisateurFacade.find(idUtilisateur)
                     .getEvenementCollection();
             for (Evenement evenement : evenements)
-                return evenement.getId().equals(idEvenement);
+                if (evenement.getId().equals(idEvenement))
+                    return true;
             return false;
         } catch (Exception e) {
             return false;

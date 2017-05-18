@@ -13,7 +13,7 @@ import javax.ejb.Local;
  * @author Alexandre Bertrand
  */
 @Local
-public interface IgestionUtilisateur {
+public interface IGestionUtilisateur {
     
     /**
      * Créer un utilisateur dans le cas ou son mail n'existe pas déjà en base 

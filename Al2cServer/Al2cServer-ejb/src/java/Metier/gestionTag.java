@@ -23,7 +23,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class gestionTag implements IgestionTag {
+public class GestionTag implements IGestionTag {
 
     @EJB
     private TagFacade tagFacade;
@@ -51,7 +51,7 @@ public class gestionTag implements IgestionTag {
     public void creerTag(String libelle, int idUtilisateur)
             throws tagAlreadyExistsException, unknowUserIdException {
         try {
-            if (!isTagAlreadyExistsForUser(idUtilisateur, libelle))
+            if (isTagAlreadyExistsForUser(idUtilisateur, libelle))
                 throw new tagAlreadyExistsException();
             Tag tag = new Tag();
             tag.setLibelle(libelle);
@@ -205,7 +205,8 @@ public class gestionTag implements IgestionTag {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
             List<Tag> tags = (List<Tag>) utilisateur.getTagCollection();
             for (Tag tag : tags)
-                return tag.getId().equals(idTag);
+                if (tag.getId().equals(idTag))
+                    return true;
             return false;
         } catch (Exception e) {
             throw new unknowUserIdException();
@@ -225,10 +226,11 @@ public class gestionTag implements IgestionTag {
     private boolean isTagAlreadyExistsForUser(int idUtilisateur, String libelle)
             throws unknowUserIdException {
         try {
-            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            List<Tag> tags = (List<Tag>) utilisateur.getTagCollection();
+            List<Tag> tags = (List<Tag>) utilisateurFacade.find(idUtilisateur)
+                    .getTagCollection();
             for (Tag tag : tags)
-                return tag.getLibelle().equals(libelle);
+                if (tag.getLibelle().equals(libelle)) 
+                    return true;
             return false;
         } catch (Exception e) {
             throw new unknowUserIdException();
@@ -248,7 +250,8 @@ public class gestionTag implements IgestionTag {
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
             for (Contact contact : utilisateur.getContactCollection())
-                return contact.getId().equals(idContact);
+                if (contact.getId().equals(idContact))
+                    return true;
             return false;
         } catch (Exception e) {
             throw new unknowUserIdException();

@@ -13,7 +13,7 @@ import javax.ejb.Local;
  * @author Alexandre Bertrand
  */
 @Local
-public interface IgestionEvenement {
+public interface IGestionEvenement {
     
     /**
      * Retourne la liste des évènements de l'utilisateur
@@ -27,17 +27,17 @@ public interface IgestionEvenement {
     /**
      * Crée un nouvel évènement pour un utilisateur donné
      * @param idUtilisateur Identifiant de l'utilisateur
+     * @param idLieu Identifiant du lieu de lévènement
      * @param intitule Intitulé de l'évènement
      * @param description Description de l'évènement
      * @param dateDebut Date de début de l'évènement
      * @param dateFin Date de fin de l'évènement
      * @param nombreInvite Nombre d'invité à l'évènement
-     * @param message Message d'invitation de l'évènement
      * @throws notFoundUtilisateurException 
      */
-    public void creationEvenement(int idUtilisateur, String intitule,
-            String description, String dateDebut, String dateFin,
-            int nombreInvite, String message)
+    public void creationEvenement(int idUtilisateur, int idLieu,
+            String intitule, String description, String dateDebut,
+            String dateFin, int nombreInvite)
             throws notFoundUtilisateurException; // THROWS  quoi mettre qu'elle erreur?? 
     
     /**
@@ -49,13 +49,22 @@ public interface IgestionEvenement {
      * @param dateDebut Date de début de l'évènement
      * @param dateFin Date de fin de l'évènement
      * @param nombreInvite Nombre d'invité à l'évènement
-     * @param message Message d'invitation de l'évènement
      * @throws notFoundEvenementException 
      */
     public void modifierEvenement(int idEvenement,int idUtilisateur,
             String intitule, String description, String dateDebut,
-            String dateFin, int nombreInvite, String message)
+            String dateFin, int nombreInvite)
             throws notFoundEvenementException; // THROWS  quoi mettre qu'elle erreur?? 
+    
+    /**
+     * Modifie un évènement pour un utilisateur donné
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @param message Message d'invitation de l'évènement
+     * @throws notFoundEvenementException 
+     */
+    public void modifierMessageInvitation(int idEvenement,int idUtilisateur,
+            String message) throws notFoundEvenementException; // THROWS  quoi mettre qu'elle erreur?? 
     
     /**
      * Retourne un évènement donné
@@ -75,5 +84,13 @@ public interface IgestionEvenement {
      */
     public void annulerEvenement(int idEvenement, int idUtilisateur)
             throws notFoundEvenementException;
+    
+    /**
+     * Vérifie que l'evenement est en préparation
+     * @param idEvenement
+     * @return true si l'évènement est en préparation
+     *         sinon retourne false
+     */
+    public boolean isEvenementEnPreparation(int idEvenement);
     
 }
