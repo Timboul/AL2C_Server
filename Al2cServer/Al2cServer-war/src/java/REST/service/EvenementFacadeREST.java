@@ -3,6 +3,7 @@ package REST.service;
 import Entities.Contact;
 import Entities.Evenement;
 import Entities.Invitation;
+import Entities.Tag;
 import Exception.notFoundEvenementException;
 import Entities.util.EtatEvenement;
 import java.util.List;
@@ -62,8 +63,9 @@ public class EvenementFacadeREST {
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
                     tempo.put("intitule", e.getIntitule());
-                    tempo.put("dateDebut", e.getDateDebut());
-                    tempo.put("dateFin", e.getDateFin());
+                    tempo.put("dateDebut", e.getDateDebut().getTime());
+                    if (e.getDateFin() != null)
+                        tempo.put("dateFin", e.getDateFin().getTime());
                     tempo.put("nbInvites", e.getInvitationCollection().size());
                     tempo.put("nbPlaces", e.getNombreInvites());
                     int nbPresents = 0;
@@ -112,8 +114,9 @@ public class EvenementFacadeREST {
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
                     tempo.put("intitule", e.getIntitule());
-                    tempo.put("dateDebut", e.getDateDebut());
-                    tempo.put("dateFin", e.getDateFin());
+                    tempo.put("dateDebut", e.getDateDebut().getTime());
+                    if (e.getDateFin() != null)
+                        tempo.put("dateFin", e.getDateFin().getTime());
                     tempo.put("nbInvites", e.getInvitationCollection().size());
                     tempo.put("nbPlaces", e.getNombreInvites());
                     int nbPresents = 0;
@@ -151,8 +154,9 @@ public class EvenementFacadeREST {
             obj.put("etat", e.getEtatEvenement());
             obj.put("intitule", e.getIntitule());
             obj.put("description", e.getDescription());
-            obj.put("dateDebut", e.getDateDebut());
-            obj.put("dateFin", e.getDateFin());
+            obj.put("dateDebut", e.getDateDebut().getTime());
+            if (e.getDateFin() != null)
+                obj.put("dateFin", e.getDateFin().getTime());
             obj.put("nbInvites", e.getInvitationCollection().size());
             obj.put("nbPlaces", e.getNombreInvites());
             obj.put("message", e.getMessageInvitation());
@@ -325,7 +329,7 @@ public class EvenementFacadeREST {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
-    
+           
     @GET
     @Path("{id}/getListeNonInvites")
     @Produces(MediaType.APPLICATION_JSON)
@@ -340,6 +344,28 @@ public class EvenementFacadeREST {
                 tempo.put("id", contact.getId());
                 tempo.put("nom", contact.getNom());
                 tempo.put("prenom", contact.getPrenom());
+                array.put(tempo);
+            }
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getListeTagNonInvites")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeTagNonInvites(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            List<Tag> tagsNotInvites = gestionInvitation
+                    .getTagsNonInvites(idEvenement, id);
+            JSONArray array = new JSONArray();
+            for (Tag tag: tagsNotInvites) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", tag.getId());
+                tempo.put("libelle", tag.getLibelle());
                 array.put(tempo);
             }
             return Response.ok(array.toString(),

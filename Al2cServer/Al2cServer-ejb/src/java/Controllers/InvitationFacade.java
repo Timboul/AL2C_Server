@@ -3,6 +3,7 @@ package Controllers;
 import Entities.Contact;
 import Entities.Evenement;
 import Entities.Invitation;
+import Entities.Tag;
 import Entities.Utilisateur;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -34,8 +35,19 @@ public class InvitationFacade extends AbstractFacade<Invitation> {
         try {
             return (List<Contact>) em
                     .createNamedQuery("Invitation.findNotInvited")
-                    .setParameter("utilisateurId", utilisateur)
+                    .setParameter("utilisateur", utilisateur)
                     .setParameter("evenementId", idEvenement).getResultList();
+        }catch(Exception e){
+            return null;
+        }
+    }
+    
+    public List<Integer> getNotInvitedTags(int idUtilisateur, int idEvenement) {
+        try {
+            return em.createNativeQuery("SELECT t.id FROM tag t WHERE t.utilisateur_id = " + idUtilisateur + " AND t.id IN (" +
+                "SELECT a.tag_id FROM affectation_tag a WHERE a.contact_id IN (" +
+                "SELECT c.id FROM contact c WHERE c.utilisateur_id = " + idUtilisateur + " AND c.id NOT IN(" +
+                "SELECT DISTINCT d.id from contact d, invitation i, evenement e where d.id = i.contact_id AND i.evenement_id = " + idEvenement + ")));").getResultList();
         }catch(Exception e){
             System.err.println("coucou");
             System.err.println(e.getMessage());

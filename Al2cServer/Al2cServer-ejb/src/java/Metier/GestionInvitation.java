@@ -119,40 +119,35 @@ public class GestionInvitation implements IGestionInvitation {
     }
 
     @Override
-    public List<Contact> getContactsNonInvites(int idEvenement, int idUtilisateur) 
-            throws notFoundEvenementException {
+    public List<Contact> getContactsNonInvites(int idEvenement,
+            int idUtilisateur) throws notFoundEvenementException {
         try {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            return invitationFacade.getNotInvitedContacts(utilisateur, idEvenement);
+            return invitationFacade
+                    .getNotInvitedContacts(utilisateur, idEvenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
     }
     
-    /*
     @Override
     public List<Tag> getTagsNonInvites(int idEvenement, int idUtilisateur) 
             throws notFoundEvenementException {
         try {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            List<Invitation> invitations = (List<Invitation>)
-                    evenementFacade.find(idEvenement).getInvitationCollection();
-            List<Contact> contacts = (List<Contact>) utilisateurFacade.find(idUtilisateur).getContactCollection();
-            for (Contact contact: contacts) {
-                for (Invitation invitation: invitations) {
-                    if (contact.getId() == invitation.getContact().getId())
-                        contacts.remove(contact);
-                }
-            }
-            return contacts;
+            List<Integer> idTags = invitationFacade
+                    .getNotInvitedTags(idUtilisateur, idEvenement);
+            ArrayList<Tag> tags = new ArrayList<Tag>();
+            for (int idTag: idTags)
+                tags.add(tagFacade.find(idTag));
+            return (List<Tag>) tags;
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }
     }
-    */
     
     @Override
     public void inviterContacts(int idEvenement, int idUtilisateur,

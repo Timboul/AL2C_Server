@@ -1,6 +1,7 @@
 package Metier;
 
 import Entities.Contact;
+import Entities.Tag;
 import Exception.noContactExistsException;
 import Exception.notFoundEvenementException;
 import java.util.List;
@@ -72,11 +73,8 @@ public interface IGestionInvitation {
      *         ne sont pas invités
      * @throws notFoundEvenementException
      */
-    /*
     public List<Tag> getTagsNonInvites(int idEvenement, int idUtilisateur)
             throws notFoundEvenementException;
-    */
-    
     
     /**
      * Crée des invitations pour tous les contacts passés en paramètres
