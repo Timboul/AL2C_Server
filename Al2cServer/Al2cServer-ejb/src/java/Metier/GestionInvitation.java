@@ -14,7 +14,6 @@ import Entities.Utilisateur;
 import Exception.noContactExistsException;
 import Exception.notFoundEvenementException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -41,6 +40,65 @@ public class GestionInvitation implements IGestionInvitation {
     
     @EJB
     private EvenementFacade evenementFacade;
+
+    @Override
+    public List<Contact> getInvitesPresents(int idEvenement, int idUtilisateur)
+            throws notFoundEvenementException {
+        try {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+                throw new notFoundEvenementException();
+            List<Invitation> invitations = (List<Invitation>)
+                    evenementFacade.find(idEvenement).getInvitationCollection();
+            ArrayList<Contact> contacts = new ArrayList<Contact>();
+            for (Invitation invitation: invitations)
+                if (invitation.getPresence() == true &&
+                    invitation.getReponse() == true)
+                    contacts.add(invitation.getContact());
+            return (List<Contact>) contacts;
+        } catch (Exception e) {
+            System.err.println(e.getCause());
+            throw new notFoundEvenementException();
+        }
+    }
+
+    @Override
+    public List<Contact> getInvitesNonPresents(int idEvenement,
+            int idUtilisateur) throws notFoundEvenementException {
+        try {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+                throw new notFoundEvenementException();
+            List<Invitation> invitations = (List<Invitation>)
+                    evenementFacade.find(idEvenement).getInvitationCollection();
+            ArrayList<Contact> contacts = new ArrayList<Contact>();
+            for (Invitation invitation: invitations)
+                if (invitation.getPresence() == false &&
+                    invitation.getReponse() == true)
+                    contacts.add(invitation.getContact());
+            return (List<Contact>) contacts;
+        } catch (Exception e) {
+            System.err.println(e.getCause());
+            throw new notFoundEvenementException();
+        }
+    }
+
+    @Override
+    public List<Contact> getInvitesSansReponse(int idEvenement,
+            int idUtilisateur) throws notFoundEvenementException {
+        try {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+                throw new notFoundEvenementException();
+            List<Invitation> invitations = (List<Invitation>)
+                    evenementFacade.find(idEvenement).getInvitationCollection();
+            ArrayList<Contact> contacts = new ArrayList<Contact>();
+            for (Invitation invitation: invitations)
+                if (invitation.getReponse() == false)
+                    contacts.add(invitation.getContact());
+            return (List<Contact>) contacts;
+        } catch (Exception e) {
+            System.err.println(e.getCause());
+            throw new notFoundEvenementException();
+        }
+    }
     
     @Override
     public List<Contact> getContactsInvites(int idEvenement, int idUtilisateur)
@@ -60,6 +118,19 @@ public class GestionInvitation implements IGestionInvitation {
         }
     }
 
+    @Override
+    public List<Contact> getContactsNonInvites(int idEvenement, int idUtilisateur) 
+            throws notFoundEvenementException {
+        try {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+                throw new notFoundEvenementException();
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
+            return invitationFacade.getNotInvitedContacts(utilisateur, idEvenement);
+        } catch (Exception e) {
+            throw new notFoundEvenementException();
+        }
+    }
+    
     /*
     @Override
     public List<Tag> getTagsNonInvites(int idEvenement, int idUtilisateur) 
@@ -82,19 +153,6 @@ public class GestionInvitation implements IGestionInvitation {
         }
     }
     */
-
-    @Override
-    public List<Contact> getContactsNonInvites(int idEvenement, int idUtilisateur) 
-            throws notFoundEvenementException {
-        try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
-                throw new notFoundEvenementException();
-            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            return invitationFacade.getNotInvitedContacts(utilisateur, idEvenement);
-        } catch (Exception e) {
-            throw new notFoundEvenementException();
-        }
-    }
     
     @Override
     public void inviterContacts(int idEvenement, int idUtilisateur,

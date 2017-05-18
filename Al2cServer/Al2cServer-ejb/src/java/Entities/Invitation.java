@@ -35,6 +35,9 @@ public class Invitation implements Serializable {
     @EmbeddedId
     protected InvitationPK invitationPK;
     
+    @Column(name = "reponse")
+    private Boolean reponse;
+    
     @Column(name = "presence")
     private Boolean presence;
     
@@ -63,6 +66,14 @@ public class Invitation implements Serializable {
 
     public void setInvitationPK(InvitationPK invitationPK) {
         this.invitationPK = invitationPK;
+    }
+    
+    public Boolean getReponse() {
+        return reponse;
+    }
+
+    public void setReponse(Boolean reponse) {
+        this.reponse = reponse;
     }
 
     public Boolean getPresence() {

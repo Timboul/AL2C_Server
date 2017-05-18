@@ -45,15 +45,19 @@ public class EvenementFacadeREST {
     public Response getListeEvenements(@QueryParam("token") int pid) {
 
         try {
-            List<Evenement> lesEvents = gestionEvenement.getListeEvenements(pid);
+            List<Evenement> lesEvents = gestionEvenement
+                    .getListeEvenements(pid);
 
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
 
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement().equals(EtatEvenement.PASSE.toString()) || 
-                    e.getEtatEvenement().equals(EtatEvenement.ANNULE.toString()) || 
-                    e.getEtatEvenement().equals(EtatEvenement.EN_PREPARATION.toString())) {
+                if (e.getEtatEvenement()
+                        .equals(EtatEvenement.PASSE.toString()) || 
+                    e.getEtatEvenement()
+                            .equals(EtatEvenement.ANNULE.toString()) || 
+                    e.getEtatEvenement()
+                            .equals(EtatEvenement.EN_PREPARATION.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
@@ -79,7 +83,8 @@ public class EvenementFacadeREST {
 
             obj.put("Evenements", events);
 
-            return Response.ok(events.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(events.toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -90,15 +95,19 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getListeEvenementsA_Venir(@QueryParam("token") int pid) {
         try {
-            List<Evenement> lesEvents = gestionEvenement.getListeEvenements(pid);
+            List<Evenement> lesEvents = gestionEvenement
+                    .getListeEvenements(pid);
 
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
 
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement().equals(EtatEvenement.A_VENIR.toString()) || 
-                    e.getEtatEvenement().equals(EtatEvenement.EN_COURS.toString()) || 
-                    e.getEtatEvenement().equals(EtatEvenement.EN_PREPARATION.toString())) {
+                if (e.getEtatEvenement()
+                        .equals(EtatEvenement.A_VENIR.toString()) || 
+                    e.getEtatEvenement()
+                            .equals(EtatEvenement.EN_COURS.toString()) || 
+                    e.getEtatEvenement()
+                            .equals(EtatEvenement.EN_PREPARATION.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
@@ -113,12 +122,17 @@ public class EvenementFacadeREST {
                             nbPresents++;
                     }
                     tempo.put("nbPresents", nbPresents);
+                    tempo.put("adresse", e.getLieuId().getAdresse());
+                    tempo.put("complement", e.getLieuId().getComplement());
+                    tempo.put("codePostal", e.getLieuId().getCodePostal());
+                    tempo.put("ville", e.getLieuId().getVille());
                     events.put(tempo);
                 }
             }
             obj.put("Evenements", events);
 
-            return Response.ok(events.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(events.toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -150,7 +164,8 @@ public class EvenementFacadeREST {
             }
             obj.put("nbPresents", nbPresents);
             
-            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(obj.toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -220,12 +235,13 @@ public class EvenementFacadeREST {
     }
     
     @GET
-    @Path("{id}/getListeInvites")
+    @Path("{id}/getListePresents")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getListeInvites(@QueryParam("token") int id,
+    public Response getListePresents(@QueryParam("token") int id,
             @PathParam("id") Integer idEvenement) {
         try {
-            List<Contact> contactsInvites = gestionInvitation.getContactsInvites(idEvenement, id);
+            List<Contact> contactsInvites = gestionInvitation
+                    .getInvitesPresents(idEvenement, id);
             JSONArray array = new JSONArray();
             for (Contact contact: contactsInvites) {
                 JSONObject tempo = new JSONObject();
@@ -234,7 +250,77 @@ public class EvenementFacadeREST {
                 tempo.put("prenom", contact.getPrenom());
                 array.put(tempo);
             }
-            return Response.ok(array.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getListeNonPresents")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeNonPresents(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            List<Contact> contactsInvites = gestionInvitation
+                    .getInvitesNonPresents(idEvenement, id);
+            JSONArray array = new JSONArray();
+            for (Contact contact: contactsInvites) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", contact.getId());
+                tempo.put("nom", contact.getNom());
+                tempo.put("prenom", contact.getPrenom());
+                array.put(tempo);
+            }
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getListeSansReponse")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeSansReponse(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            List<Contact> contactsInvites = gestionInvitation
+                    .getInvitesSansReponse(idEvenement, id);
+            JSONArray array = new JSONArray();
+            for (Contact contact: contactsInvites) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", contact.getId());
+                tempo.put("nom", contact.getNom());
+                tempo.put("prenom", contact.getPrenom());
+                array.put(tempo);
+            }
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getListeInvites")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeInvites(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            List<Contact> contactsInvites = gestionInvitation
+                    .getContactsInvites(idEvenement, id);
+            JSONArray array = new JSONArray();
+            for (Contact contact: contactsInvites) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("id", contact.getId());
+                tempo.put("nom", contact.getNom());
+                tempo.put("prenom", contact.getPrenom());
+                array.put(tempo);
+            }
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -246,7 +332,8 @@ public class EvenementFacadeREST {
     public Response getListeNonInvites(@QueryParam("token") int id,
             @PathParam("id") Integer idEvenement) {
         try {
-            List<Contact> contactsNotInvites = gestionInvitation.getContactsNonInvites(idEvenement, id);
+            List<Contact> contactsNotInvites = gestionInvitation
+                    .getContactsNonInvites(idEvenement, id);
             JSONArray array = new JSONArray();
             for (Contact contact: contactsNotInvites) {
                 JSONObject tempo = new JSONObject();
@@ -255,7 +342,8 @@ public class EvenementFacadeREST {
                 tempo.put("prenom", contact.getPrenom());
                 array.put(tempo);
             }
-            return Response.ok(array.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -264,12 +352,14 @@ public class EvenementFacadeREST {
     @GET
     @Path("{id}/annulerEvenement")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response annulerEvenement(@QueryParam("token") int pid, @PathParam("id") Integer idEvent) {
+    public Response annulerEvenement(@QueryParam("token") int pid, 
+            @PathParam("id") Integer idEvent) {
         try {
             //TODO voir si on vérifie la valider du token ici
             gestionEvenement.annulerEvenement(idEvent, pid);
 
-            return Response.ok(new JSONObject().put("Statut", "ok").toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();

@@ -13,6 +13,37 @@ import java.util.List;
 public interface IGestionInvitation {
     
     /**
+     * Récupère la liste des contacts invités qui ont répondu présent
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @return Retourne la liste des contacts invités qui ont répondu présent
+     * @throws notFoundEvenementException
+     */
+    public List<Contact> getInvitesPresents(int idEvenement, int idUtilisateur)
+            throws notFoundEvenementException;
+    
+    /**
+     * Récupère la liste des contacts invités qui ont répondu non présent
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @return Retourne la liste des contacts invités qui ont répondu non
+     *         présent
+     * @throws notFoundEvenementException
+     */
+    public List<Contact> getInvitesNonPresents(int idEvenement,
+            int idUtilisateur) throws notFoundEvenementException;
+    
+    /**
+     * Récupère la liste des contacts invités qui n'ont pas répondu
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @return Retourne la liste des contacts invités qui n'ont pas répondu
+     * @throws notFoundEvenementException
+     */
+    public List<Contact> getInvitesSansReponse(int idEvenement,
+            int idUtilisateur) throws notFoundEvenementException;
+    
+    /**
      * Récupère la liste des contacts invités
      * @param idEvenement Identifiant de l'évènement
      * @param idUtilisateur Identifiant de l'utilisateur
@@ -21,6 +52,16 @@ public interface IGestionInvitation {
      */
     public List<Contact> getContactsInvites(int idEvenement, int idUtilisateur)
             throws notFoundEvenementException;
+    
+    /**
+     * Récupère la liste des contacts qui ne sont pas invités
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @return Retourne la liste des contacts qui ne sont pas invités
+     * @throws notFoundEvenementException
+     */
+    public List<Contact> getContactsNonInvites(int idEvenement,
+            int idUtilisateur) throws notFoundEvenementException;
     
     /**
      * Récupère la liste des tags pour lequels un ou plusieurs contacts ne sont
@@ -36,15 +77,6 @@ public interface IGestionInvitation {
             throws notFoundEvenementException;
     */
     
-    /**
-     * Récupère la liste des contacts qui ne sont pas invités
-     * @param idEvenement Identifiant de l'évènement
-     * @param idUtilisateur Identifiant de l'utilisateur
-     * @return Retourne la liste des contacts qui ne sont pas invités
-     * @throws notFoundEvenementException
-     */
-    public List<Contact> getContactsNonInvites(int idEvenement,
-            int idUtilisateur) throws notFoundEvenementException;
     
     /**
      * Crée des invitations pour tous les contacts passés en paramètres
