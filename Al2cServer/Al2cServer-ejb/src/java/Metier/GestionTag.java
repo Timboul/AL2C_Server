@@ -23,7 +23,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class NGestionTag implements NIGestionTag {
+public class GestionTag implements IGestionTag {
 
     @EJB
     private TagFacade tagFacade;

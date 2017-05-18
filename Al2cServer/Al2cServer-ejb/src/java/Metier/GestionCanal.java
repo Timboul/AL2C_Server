@@ -19,7 +19,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class NGestionCanal implements NIGestionCanal {
+public class GestionCanal implements IGestionCanal {
 
     @EJB
     private CanalFacade canalFacade;

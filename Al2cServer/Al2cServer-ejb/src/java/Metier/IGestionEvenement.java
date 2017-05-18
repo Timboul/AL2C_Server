@@ -13,7 +13,7 @@ import javax.ejb.Local;
  * @author Alexandre Bertrand
  */
 @Local
-public interface NIGestionEvenement {
+public interface IGestionEvenement {
     
     /**
      * Retourne la liste des évènements de l'utilisateur

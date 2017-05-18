@@ -17,7 +17,7 @@ import javax.ejb.Local;
  * @author Alexandre Bertrand
  */
 @Local
-public interface NIGestionTag {
+public interface IGestionTag {
     
     /**
      * Retourne la liste de tags associés à un utilisateur

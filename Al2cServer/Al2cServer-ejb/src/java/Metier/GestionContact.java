@@ -17,7 +17,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class NGestionContact implements NIGestionContact {
+public class GestionContact implements IGestionContact {
 
     @EJB
     private ContactFacade contactFacade;

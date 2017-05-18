@@ -18,9 +18,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
-import Metier.NIGestionLieu;
-import Metier.NIGestionInvitation;
-import Metier.NIGestionEvenement;
+import Metier.IGestionEvenement;
+import Metier.IGestionInvitation;
+import Metier.IGestionLieu;
 
 /**
  *
@@ -31,13 +31,13 @@ import Metier.NIGestionEvenement;
 public class EvenementFacadeREST {
 
     @EJB
-    private NIGestionEvenement gestionEvenement;
+    private IGestionEvenement gestionEvenement;
     
     @EJB
-    private NIGestionLieu gestionLieu;
+    private IGestionLieu gestionLieu;
     
     @EJB
-    private NIGestionInvitation gestionInvitation;
+    private IGestionInvitation gestionInvitation;
 
     @GET
     @Path("getListeEvenements")

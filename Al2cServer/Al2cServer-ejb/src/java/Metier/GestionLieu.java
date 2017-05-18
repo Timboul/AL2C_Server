@@ -17,7 +17,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class NGestionLieu implements NIGestionLieu {
+public class GestionLieu implements IGestionLieu {
 
     @EJB
     private LieuFacade lieuFacade;

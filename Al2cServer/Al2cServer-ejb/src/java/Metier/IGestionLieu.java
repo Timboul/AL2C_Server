@@ -7,7 +7,7 @@ import Exception.noLieuFoundException;
  *
  * @author Alexandre Bertrand
  */
-public interface NIGestionLieu {
+public interface IGestionLieu {
     
     /**
      * Crée le lieu

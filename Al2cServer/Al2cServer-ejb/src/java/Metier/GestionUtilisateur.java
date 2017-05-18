@@ -15,7 +15,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class NGestionUtilisateur implements NIGestionUtilisateur {
+public class GestionUtilisateur implements IGestionUtilisateur {
 
     @EJB
     private UtilisateurFacade utilisateurFacade;
