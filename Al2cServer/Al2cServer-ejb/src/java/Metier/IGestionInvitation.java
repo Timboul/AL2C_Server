@@ -1,7 +1,6 @@
 package Metier;
 
 import Entities.Contact;
-import Entities.Tag;
 import Exception.noContactExistsException;
 import Exception.notFoundEvenementException;
 import java.util.List;

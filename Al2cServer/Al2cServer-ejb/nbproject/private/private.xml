@@ -3,15 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IGestionInvitation.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IGestionTag.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IGestionEvenement.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IGestionLieu.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Entities/Invitation.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Controllers/InvitationFacade.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/GestionTag.java</file>
-            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/GestionEvenement.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/gestionEvenement.java</file>
             <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/GestionInvitation.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IgestionEvenement.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IGestionLieu.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/gestionTag.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Entities/Invitation.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IgestionTag.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Controllers/InvitationFacade.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IgestionContact.java</file>
+            <file>file:/D:/PROGRAMMATION/WORKSPACES/GITHUB_DESKTOP/AL2C_Server/Al2cServer/Al2cServer-ejb/src/java/Metier/IGestionInvitation.java</file>
         </group>
     </open-files>
 </project-private>
