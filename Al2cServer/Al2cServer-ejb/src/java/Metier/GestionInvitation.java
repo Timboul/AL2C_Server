@@ -10,6 +10,7 @@ import Entities.Evenement;
 import Entities.Invitation;
 import Entities.InvitationPK;
 import Entities.Tag;
+import Entities.Utilisateur;
 import Exception.noContactExistsException;
 import Exception.notFoundEvenementException;
 import java.util.ArrayList;
@@ -88,7 +89,8 @@ public class GestionInvitation implements IGestionInvitation {
         try {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            return invitationFacade.getNotInvitedContacts(idUtilisateur, idEvenement);
+            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
+            return invitationFacade.getNotInvitedContacts(utilisateur, idEvenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }

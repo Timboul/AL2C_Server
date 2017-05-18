@@ -225,32 +225,37 @@ public class EvenementFacadeREST {
     public Response getListeInvites(@QueryParam("token") int id,
             @PathParam("id") Integer idEvenement) {
         try {
-            System.err.println("coucou 1");
             List<Contact> contactsInvites = gestionInvitation.getContactsInvites(idEvenement, id);
-            System.err.println("coucou 2");
-            List<Contact> contactsNotInvites = gestionInvitation.getContactsNonInvites(idEvenement, id);
-            System.err.println("coucou 3");
-            JSONArray cInvites = new JSONArray();
-            JSONArray cNonInvites = new JSONArray();
-            JSONObject obj = new JSONObject();
+            JSONArray array = new JSONArray();
             for (Contact contact: contactsInvites) {
                 JSONObject tempo = new JSONObject();
                 tempo.put("id", contact.getId());
                 tempo.put("nom", contact.getNom());
                 tempo.put("prenom", contact.getPrenom());
-                cInvites.put(tempo);
+                array.put(tempo);
             }
+            return Response.ok(array.toString(), MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getListeNonInvites")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeNonInvites(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            List<Contact> contactsNotInvites = gestionInvitation.getContactsNonInvites(idEvenement, id);
+            JSONArray array = new JSONArray();
             for (Contact contact: contactsNotInvites) {
                 JSONObject tempo = new JSONObject();
                 tempo.put("id", contact.getId());
                 tempo.put("nom", contact.getNom());
                 tempo.put("prenom", contact.getPrenom());
-                cNonInvites.put(tempo);
+                array.put(tempo);
             }
-            
-            obj.put("contactsInvites", cInvites);
-            obj.put("contactsNonInvites", cNonInvites);
-            return Response.ok(obj.toString(), MediaType.APPLICATION_JSON).build();
+            return Response.ok(array.toString(), MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }

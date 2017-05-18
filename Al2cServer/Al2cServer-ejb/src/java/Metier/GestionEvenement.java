@@ -66,7 +66,7 @@ public class GestionEvenement implements IGestionEvenement {
             evenement.setMessageInvitation("TODO - Rédiger le message par" 
                     + "défault ici");
             evenement.setUtilisateurId(utilisateur);
-            evenement.setEtatEvenement(EtatEvenement.A_VENIR.toString());
+            evenement.setEtatEvenement(EtatEvenement.EN_PREPARATION.toString());
             evenement.setLieuId(lieu);
 
             evenementFacade.create(evenement);
