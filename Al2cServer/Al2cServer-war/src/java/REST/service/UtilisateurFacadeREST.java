@@ -15,7 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
-import Metier.IGestionContact;
+import Metier.NIGestionContact;
 import Metier.NIGestionUtilisateur;
 
 /**
@@ -32,7 +32,7 @@ public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
     private NIGestionUtilisateur gU;
     
     @EJB
-    private IGestionContact gC;
+    private NIGestionContact gC;
 
     @POST
     @Path("inscription")

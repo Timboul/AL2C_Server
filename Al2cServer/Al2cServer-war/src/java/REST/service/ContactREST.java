@@ -19,8 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import Metier.IGestionContact;
 import Metier.NIGestionCanal;
+import Metier.NIGestionContact;
 
 /**
  * Contrôleur permettant la gestion des contacts de l'utilisateur
@@ -32,7 +32,7 @@ import Metier.NIGestionCanal;
 public class ContactREST {
     
     @EJB
-    private IGestionContact gestionContact;
+    private NIGestionContact gestionContact;
     
     @EJB
     private NIGestionCanal gestionCanal;
