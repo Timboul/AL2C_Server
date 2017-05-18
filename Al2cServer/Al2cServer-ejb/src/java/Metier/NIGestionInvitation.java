@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Alexandre Bertrand
  */
-public interface IGestionInvitation {
+public interface NIGestionInvitation {
     
     /**
      * Récupère la liste des contacts invités

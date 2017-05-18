@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
 import Metier.IGestionContact;
-import Metier.IGestionUtilisateur;
+import Metier.NIGestionUtilisateur;
 
 /**
  *
@@ -29,7 +29,7 @@ import Metier.IGestionUtilisateur;
 public class UtilisateurFacadeREST /*extends AbstractFacade<Utilisateur>*/ {
 
     @EJB//(name="Metier.IgestionUtilisateur")
-    private IGestionUtilisateur gU;
+    private NIGestionUtilisateur gU;
     
     @EJB
     private IGestionContact gC;

@@ -23,7 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.*;
-import Metier.IGestionTag;
+import Metier.NIGestionTag;
 
 /**
  *
@@ -34,7 +34,7 @@ import Metier.IGestionTag;
 public class tagREST {
 
     @EJB
-    private IGestionTag gT;
+    private NIGestionTag gT;
 
     @GET
     @Path("afficherTags")

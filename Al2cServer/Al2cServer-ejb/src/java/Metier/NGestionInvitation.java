@@ -24,7 +24,7 @@ import javax.ejb.Stateless;
  * @author Alexandre Bertrand
  */
 @Stateless
-public class GestionInvitation implements IGestionInvitation {
+public class NGestionInvitation implements NIGestionInvitation {
 
     @EJB
     private InvitationFacade invitationFacade;

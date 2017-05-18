@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Alexandre Bertrand
  */
-public interface IGestionContact {
+public interface NIGestionContact {
     
     /**
      * Vérifie que l'utilisateur dispose de contacts

@@ -8,7 +8,7 @@ import Exception.notFoundUtilisateurException;
  *
  * @author Alexandre Bertrand
  */
-public interface IGestionCanal {
+public interface NIGestionCanal {
     
     /**
      * Crée un canal pour le contact dont l'identifiant est passé en paramètres
