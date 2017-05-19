@@ -64,13 +64,12 @@ public class GestionEvenement implements IGestionEvenement {
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
 
-            Date debut = formatter.parse(dateDebut);
-            evenement.setDateDebut(debut);
+            evenement.setDateDebut(new Date(Long.parseLong(dateDebut)));
 
             if (dateFin != null) {
-                evenement.setDateFin(formatter.parse(dateFin));
+                evenement.setDateFin(new Date(Long.parseLong(dateFin)));
             }
- 
+       
             evenement.setNombreInvites(nombreInvite);
             evenement.setMessageInvitation("TODO - Rédiger le message par"
                     + "défault ici");
@@ -78,7 +77,6 @@ public class GestionEvenement implements IGestionEvenement {
             evenement.setUtilisateurId(utilisateur);
             evenement.setEtatEvenement(EtatEvenement.EN_PREPARATION.toString());
             evenement.setLieuId(lieu);
-
             evenementFacade.create(evenement);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -93,7 +91,7 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
         
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
                 throw new notFoundEvenementException();
@@ -103,9 +101,9 @@ public class GestionEvenement implements IGestionEvenement {
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
             if (isEvenementEnPreparation(idEvenement)) {
-                evenement.setDateDebut(formatter.parse(dateDebut));
+                evenement.setDateDebut(new Date(Long.parseLong(dateDebut)));
                 if (dateFin != null) {
-                    evenement.setDateFin(formatter.parse(dateFin));
+                    evenement.setDateFin(new Date(Long.parseLong(dateFin)));
                 }
             }
             evenement.setNombreInvites(nombreInvite);
