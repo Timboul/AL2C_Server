@@ -9,7 +9,9 @@ import Entities.Lieu;
 import Entities.Utilisateur;
 import Exception.notFoundEvenementException;
 import Exception.notFoundUtilisateurException;
-import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -28,7 +30,7 @@ public class GestionEvenement implements IGestionEvenement {
 
     @EJB
     private UtilisateurFacade utilisateurFacade;
-    
+
     @EJB
     private LieuFacade lieuFacade;
 
@@ -37,8 +39,9 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundEvenementException {
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            if (utilisateur.getEvenementCollection().isEmpty())
+            if (utilisateur.getEvenementCollection().isEmpty()) {
                 throw new notFoundEvenementException();
+            }
             return (List<Evenement>) utilisateur.getEvenementCollection();
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -52,25 +55,33 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundUtilisateurException {
         // Si controles non effectué sur le coté client vérifier date > datenow 
         // vérifier qu'aucun des champs n'est vides
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
             Lieu lieu = lieuFacade.find(idLieu);
-            
+
             Evenement evenement = new Evenement();
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
-            evenement.setDateDebut(Date.valueOf(dateDebut));
-            if (dateFin != null)
-                evenement.setDateFin(Date.valueOf(dateFin));
+
+            Date debut = formatter.parse(dateDebut);
+            evenement.setDateDebut(debut);
+
+            if (dateFin != null) {
+                evenement.setDateFin(formatter.parse(dateFin));
+            }
+ 
             evenement.setNombreInvites(nombreInvite);
-            evenement.setMessageInvitation("TODO - Rédiger le message par" 
+            evenement.setMessageInvitation("TODO - Rédiger le message par"
                     + "défault ici");
+  
             evenement.setUtilisateurId(utilisateur);
             evenement.setEtatEvenement(EtatEvenement.EN_PREPARATION.toString());
             evenement.setLieuId(lieu);
 
             evenementFacade.create(evenement);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new notFoundUtilisateurException();
         }
     }
@@ -81,17 +92,21 @@ public class GestionEvenement implements IGestionEvenement {
             String dateFin, int nombreInvite)
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
                 throw new notFoundEvenementException();
-            
+            }
+
             Evenement evenement = evenementFacade.find(idEvenement);
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
             if (isEvenementEnPreparation(idEvenement)) {
-                evenement.setDateDebut(Date.valueOf(dateDebut));
-                if (dateFin != null)
-                    evenement.setDateFin(Date.valueOf(dateFin));
+                evenement.setDateDebut(formatter.parse(dateDebut));
+                if (dateFin != null) {
+                    evenement.setDateFin(formatter.parse(dateFin));
+                }
             }
             evenement.setNombreInvites(nombreInvite);
 
@@ -100,16 +115,17 @@ public class GestionEvenement implements IGestionEvenement {
             throw new notFoundEvenementException();
         }
     }
-    
+
     @Override
     public void modifierMessageInvitation(int idEvenement, int idUtilisateur,
             String message)
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
                 throw new notFoundEvenementException();
-            
+            }
+
             Evenement evenement = evenementFacade.find(idEvenement);
             evenement.setIntitule(message);
 
@@ -123,8 +139,9 @@ public class GestionEvenement implements IGestionEvenement {
     public Evenement afficherEvenement(int idEvenement, int idUtilisateur)
             throws notFoundEvenementException {
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
                 throw new notFoundEvenementException();
+            }
             return evenementFacade.find(idEvenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -136,8 +153,9 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundEvenementException {
         // on vérifie que l'user à bien cet évenement 
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
                 throw new notFoundEvenementException();
+            }
 
             Evenement evenement = evenementFacade.find(idEvenement);
             evenement.setEtatEvenement(EtatEvenement.ANNULE.toString());
@@ -153,34 +171,37 @@ public class GestionEvenement implements IGestionEvenement {
         try {
             Evenement evenement = evenementFacade.find(idEvenement);
             if (evenement.getEtatEvenement() == EtatEvenement.EN_PREPARATION
-                    .toString())
+                    .toString()) {
                 return true;
+            }
             return false;
         } catch (Exception e) {
             return false;
         }
     }
-    
+
     /**
      * Vérifie l'appartenance de l'évènement à l'utilisateur
+     *
      * @param idEvenement Identifiant de l'évènement
      * @param idUtilisateur Identifiant de l'utilisateur
-     * @return true si l'évènement appartient à l'utilisateur
-     *         sinon retourne false
+     * @return true si l'évènement appartient à l'utilisateur sinon retourne
+     * false
      */
     private boolean isEventExistsOnUserEvents(int idEvenement,
             int idUtilisateur) {
         try {
-            List<Evenement> evenements = (List<Evenement>)
-                    utilisateurFacade.find(idUtilisateur)
+            List<Evenement> evenements = (List<Evenement>) utilisateurFacade.find(idUtilisateur)
                     .getEvenementCollection();
-            for (Evenement evenement : evenements)
-                if (evenement.getId().equals(idEvenement))
+            for (Evenement evenement : evenements) {
+                if (evenement.getId().equals(idEvenement)) {
                     return true;
+                }
+            }
             return false;
         } catch (Exception e) {
             return false;
         }
     }
-    
+
 }

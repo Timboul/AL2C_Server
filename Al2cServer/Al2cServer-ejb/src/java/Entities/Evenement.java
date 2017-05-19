@@ -62,7 +62,7 @@ public class Evenement implements Serializable {
     @Column(name = "description")
     private String description;
     
-    @Size(max = 8)
+   // @Size(max = 8)
     @Column(name = "etat_evenement")
     private String etatEvenement;
     

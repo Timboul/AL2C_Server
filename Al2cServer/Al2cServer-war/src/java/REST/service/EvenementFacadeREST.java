@@ -201,6 +201,7 @@ public class EvenementFacadeREST {
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
