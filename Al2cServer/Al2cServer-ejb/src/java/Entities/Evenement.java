@@ -67,11 +67,11 @@ public class Evenement implements Serializable {
     private String etatEvenement;
     
     @Column(name = "date_debut")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateDebut;
     
     @Column(name = "date_fin")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateFin;
     
     @Column(name = "nombre_invites")

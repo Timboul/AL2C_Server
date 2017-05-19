@@ -9,7 +9,6 @@ import Entities.Lieu;
 import Entities.Utilisateur;
 import Exception.notFoundEvenementException;
 import Exception.notFoundUtilisateurException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -55,7 +54,6 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundUtilisateurException {
         // Si controles non effectué sur le coté client vérifier date > datenow 
         // vérifier qu'aucun des champs n'est vides
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
             Lieu lieu = lieuFacade.find(idLieu);
@@ -63,23 +61,32 @@ public class GestionEvenement implements IGestionEvenement {
             Evenement evenement = new Evenement();
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
-
             evenement.setDateDebut(new Date(Long.parseLong(dateDebut)));
-
+            SimpleDateFormat formater = null;
+            String periode;
             if (dateFin != null) {
                 evenement.setDateFin(new Date(Long.parseLong(dateFin)));
+                formater = new SimpleDateFormat("'du' dd MMMM yyyy 'à' hh:mm:ss");
+                periode = formater.format(new Date(Long.parseLong(dateDebut)));
+                formater = new SimpleDateFormat("'au' dd MMMM yyyy 'à' hh:mm:ss");
+                periode += (" " + formater.format(new Date(Long.parseLong(dateFin))));
+            } else {
+                formater = new SimpleDateFormat("'le' dd MMMM yyyy 'à' hh:mm:ss");
+                periode = formater.format(new Date(Long.parseLong(dateDebut)));
             }
-       
             evenement.setNombreInvites(nombreInvite);
-            evenement.setMessageInvitation("TODO - Rédiger le message par"
-                    + "défault ici");
-  
+            evenement.setMessageInvitation("Bonjour ! Nous sommes heureux de "
+                    + "vous annoncer que vous êtes invités à l'évènement " 
+                    + intitule + " organisé par " + utilisateur.getPrenom() 
+                    + " " + utilisateur.getNom() + " qui aura lieu " + periode 
+                    + " à l'adresse :" + "\n" + lieu.getAdresse() + "\n" 
+                    + lieu.getComplement() + "\n" + lieu.getCodePostal() + ", " 
+                    + lieu.getVille() + "\n" + "Souhaitez-vous y participer ?");
             evenement.setUtilisateurId(utilisateur);
             evenement.setEtatEvenement(EtatEvenement.EN_PREPARATION.toString());
             evenement.setLieuId(lieu);
             evenementFacade.create(evenement);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new notFoundUtilisateurException();
         }
     }

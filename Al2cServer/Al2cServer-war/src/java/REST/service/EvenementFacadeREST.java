@@ -22,6 +22,7 @@ import org.json.*;
 import Metier.IGestionEvenement;
 import Metier.IGestionInvitation;
 import Metier.IGestionLieu;
+import java.util.ArrayList;
 
 /**
  *
@@ -196,12 +197,11 @@ public class EvenementFacadeREST {
             gestionEvenement.creationEvenement(pid, idLieu,
                     obj.getString("intitule"), obj.getString("description"),
                     obj.getString("dateDebut"), dateFin,
-                    obj.getInt("nombreInvite"));
+                    obj.getInt("nbPlaces"));
 
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
@@ -234,7 +234,6 @@ public class EvenementFacadeREST {
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
@@ -375,7 +374,108 @@ public class EvenementFacadeREST {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
-
+    
+    @PUT
+    @Path("{id}/modifierMessage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modifierMessage(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            JSONObject obj = new JSONObject();
+            gestionEvenement.modifierMessageInvitation(idEvenement, id,
+                    obj.getString("message"));
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @POST
+    @Path("{idEvenement}/inviterContacts")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response inviterContacts(@QueryParam("token") int id,
+            @PathParam("idEvenement") Integer idEvenement) {
+        try {
+            JSONArray contacts = new JSONArray();
+            ArrayList<String> liste = new ArrayList<String>();
+            for (int i = 0; i < contacts.length(); i++) {
+                JSONObject contact = new JSONObject(contacts.get(i));
+                liste.add(contact.getString("id"));
+            }
+            gestionInvitation.inviterContacts(idEvenement, id, liste);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @POST
+    @Path("{idEvenement}/supprimerInvitationContacts")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response supprimerInvitationContacts(@QueryParam("token") int id,
+            @PathParam("idEvenement") Integer idEvenement) {
+        try {
+            JSONArray contacts = new JSONArray();
+            ArrayList<String> liste = new ArrayList<String>();
+            for (int i = 0; i < contacts.length(); i++) {
+                JSONObject contact = new JSONObject(contacts.get(i));
+                liste.add(contact.getString("id"));
+            }
+            gestionInvitation.supprimerInvitationContacts(idEvenement, id, liste);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @POST
+    @Path("{idEvenement}/inviterTags")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response inviterTags(@QueryParam("token") int id,
+            @PathParam("idEvenement") Integer idEvenement) {
+        try {
+            JSONArray tags = new JSONArray();
+            ArrayList<String> liste = new ArrayList<String>();
+            for (int i = 0; i < tags.length(); i++) {
+                JSONObject tag = new JSONObject(tags.get(i));
+                liste.add(tag.getString("id"));
+            }
+            gestionInvitation.inviterTags(idEvenement, id, liste);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @POST
+    @Path("{idEvenement}/supprimerInvitationTags")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response supprimerInvitationTags(@QueryParam("token") int id,
+            @PathParam("idEvenement") Integer idEvenement) {
+        try {
+            JSONArray tags = new JSONArray();
+            ArrayList<String> liste = new ArrayList<String>();
+            for (int i = 0; i < tags.length(); i++) {
+                JSONObject tag = new JSONObject(tags.get(i));
+                liste.add(tag.getString("id"));
+            }
+            gestionInvitation.supprimerInvitationTags(idEvenement, id, liste);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
     @GET
     @Path("{id}/annulerEvenement")
     @Produces(MediaType.APPLICATION_JSON)
@@ -388,7 +488,6 @@ public class EvenementFacadeREST {
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
