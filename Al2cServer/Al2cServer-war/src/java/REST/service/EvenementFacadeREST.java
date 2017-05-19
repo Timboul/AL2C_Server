@@ -397,12 +397,12 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response inviterContacts(@QueryParam("token") int id,
-            @PathParam("idEvenement") Integer idEvenement) {
+            @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
-            JSONArray contacts = new JSONArray();
+            JSONArray contacts = new JSONArray(data);
             ArrayList<String> liste = new ArrayList<String>();
             for (int i = 0; i < contacts.length(); i++) {
-                JSONObject contact = new JSONObject(contacts.get(i));
+                JSONObject contact = contacts.getJSONObject(i);
                 liste.add(contact.getString("id"));
             }
             gestionInvitation.inviterContacts(idEvenement, id, liste);
@@ -418,12 +418,12 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response supprimerInvitationContacts(@QueryParam("token") int id,
-            @PathParam("idEvenement") Integer idEvenement) {
+            @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
-            JSONArray contacts = new JSONArray();
+            JSONArray contacts = new JSONArray(data);
             ArrayList<String> liste = new ArrayList<String>();
             for (int i = 0; i < contacts.length(); i++) {
-                JSONObject contact = new JSONObject(contacts.get(i));
+                JSONObject contact = contacts.getJSONObject(i);
                 liste.add(contact.getString("id"));
             }
             gestionInvitation.supprimerInvitationContacts(idEvenement, id, liste);
@@ -439,12 +439,12 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response inviterTags(@QueryParam("token") int id,
-            @PathParam("idEvenement") Integer idEvenement) {
+            @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
-            JSONArray tags = new JSONArray();
+            JSONArray tags = new JSONArray(data);
             ArrayList<String> liste = new ArrayList<String>();
             for (int i = 0; i < tags.length(); i++) {
-                JSONObject tag = new JSONObject(tags.get(i));
+                JSONObject tag = tags.getJSONObject(i);
                 liste.add(tag.getString("id"));
             }
             gestionInvitation.inviterTags(idEvenement, id, liste);
@@ -460,12 +460,12 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response supprimerInvitationTags(@QueryParam("token") int id,
-            @PathParam("idEvenement") Integer idEvenement) {
+            @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
-            JSONArray tags = new JSONArray();
+            JSONArray tags = new JSONArray(data);
             ArrayList<String> liste = new ArrayList<String>();
             for (int i = 0; i < tags.length(); i++) {
-                JSONObject tag = new JSONObject(tags.get(i));
+                JSONObject tag = tags.getJSONObject(i);
                 liste.add(tag.getString("id"));
             }
             gestionInvitation.supprimerInvitationTags(idEvenement, id, liste);

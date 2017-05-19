@@ -179,7 +179,7 @@ public class ContactREST {
     public Response creerContacts(@QueryParam("token") int id, String data) {
         try {
             JSONArray contacts = new JSONArray(data);
-            for (int i = 0; i < contacts.length() - 1; i++) { 
+            for (int i = 0; i < contacts.length(); i++) { 
                 JSONObject contact = new JSONObject(contacts.get(i).toString());                
                 int contactId = gestionContact.ajouterContact(id, 
                         contact.getString("nom"), contact.getString("prenom"));

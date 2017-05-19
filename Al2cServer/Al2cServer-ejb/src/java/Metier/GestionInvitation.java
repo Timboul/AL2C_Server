@@ -11,6 +11,8 @@ import Entities.Invitation;
 import Entities.InvitationPK;
 import Entities.Tag;
 import Entities.Utilisateur;
+import Entities.util.EtatEvenement;
+import Exception.deleteNotPossible;
 import Exception.noContactExistsException;
 import Exception.notFoundEvenementException;
 import java.util.ArrayList;
@@ -56,7 +58,6 @@ public class GestionInvitation implements IGestionInvitation {
                     contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
-            System.err.println(e.getCause());
             throw new notFoundEvenementException();
         }
     }
@@ -76,7 +77,6 @@ public class GestionInvitation implements IGestionInvitation {
                     contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
-            System.err.println(e.getCause());
             throw new notFoundEvenementException();
         }
     }
@@ -95,7 +95,6 @@ public class GestionInvitation implements IGestionInvitation {
                     contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
-            System.err.println(e.getCause());
             throw new notFoundEvenementException();
         }
     }
@@ -113,7 +112,6 @@ public class GestionInvitation implements IGestionInvitation {
                 contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
-            System.err.println(e.getCause());
             throw new notFoundEvenementException();
         }
     }
@@ -156,20 +154,20 @@ public class GestionInvitation implements IGestionInvitation {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
             Evenement evenement = evenementFacade.find(idEvenement);
-            InvitationPK invitationPK = new InvitationPK();
-            invitationPK.setEvenementId(idEvenement);
             for (String idContact: idContacts) {
                 if (!isContactExistsInUtilisateurContacts(
                         Integer.parseInt(idContact), idUtilisateur))
                     throw new noContactExistsException();
                 Contact contact = contactFacade
                         .find(Integer.parseInt(idContact));
+                InvitationPK invitationPK = new InvitationPK();
+                invitationPK.setEvenementId(idEvenement);
                 invitationPK.setContactId(Integer.parseInt(idContact));
-                
                 if (!isLigneInvitationExist(invitationPK)) {
                     Invitation invitation = new Invitation();
                     invitation.setContact(contact);
                     invitation.setEvenement(evenement);
+                    invitation.setReponse(false);
                     invitation.setPresence(false);
                     invitation.setInvitationPK(invitationPK);
 
@@ -188,24 +186,25 @@ public class GestionInvitation implements IGestionInvitation {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
             Evenement evenement = evenementFacade.find(idEvenement);
-            InvitationPK invitationPK = new InvitationPK();
-            invitationPK.setEvenementId(idEvenement);
             for (String idTag: idTags) {
                 if (!isTagExistsInUtilisateurTags(Integer.parseInt(idTag),
                         idUtilisateur))
                     throw new noContactExistsException();
                 List<Contact> contacts = (List<Contact>)
-                        tagFacade.find(Integer.parseInt(idTag));
+                        tagFacade.find(Integer.parseInt(idTag))
+                                .getContactCollection();
                 for (Contact contact: contacts) {
                     if (!isContactExistsInUtilisateurContacts(
                             contact.getId(), idUtilisateur))
                         throw new noContactExistsException();
+                    InvitationPK invitationPK = new InvitationPK();
+                    invitationPK.setEvenementId(idEvenement);
                     invitationPK.setContactId(contact.getId());
-
                     if (!isLigneInvitationExist(invitationPK)) {
                         Invitation invitation = new Invitation();
                         invitation.setContact(contact);
                         invitation.setEvenement(evenement);
+                        invitation.setReponse(false);
                         invitation.setPresence(false);
                         invitation.setInvitationPK(invitationPK);
 
@@ -225,14 +224,17 @@ public class GestionInvitation implements IGestionInvitation {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
             Evenement evenement = evenementFacade.find(idEvenement);
-            InvitationPK invitationPK = new InvitationPK();
-            invitationPK.setEvenementId(idEvenement);
+            if (!evenement.getEtatEvenement().equals(EtatEvenement
+                    .EN_PREPARATION.toString()))
+                throw new deleteNotPossible();
             for (String idContact: idContacts) {
                 if (!isContactExistsInUtilisateurContacts(
                         Integer.parseInt(idContact), idUtilisateur))
                     throw new noContactExistsException();
                 Contact contact = contactFacade
                         .find(Integer.parseInt(idContact));
+                InvitationPK invitationPK = new InvitationPK();
+                invitationPK.setEvenementId(idEvenement);
                 invitationPK.setContactId(Integer.parseInt(idContact));
                 
                 if (isLigneInvitationExist(invitationPK)) {
@@ -252,20 +254,23 @@ public class GestionInvitation implements IGestionInvitation {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
             Evenement evenement = evenementFacade.find(idEvenement);
-            InvitationPK invitationPK = new InvitationPK();
-            invitationPK.setEvenementId(idEvenement);
+            if (!evenement.getEtatEvenement().equals(EtatEvenement
+                    .EN_PREPARATION.toString()))
+                throw new deleteNotPossible();
             for (String idTag: idTags) {
                 if (!isTagExistsInUtilisateurTags(Integer.parseInt(idTag),
                         idUtilisateur))
                     throw new noContactExistsException();
                 List<Contact> contacts = (List<Contact>)
-                        tagFacade.find(Integer.parseInt(idTag));
+                        tagFacade.find(Integer.parseInt(idTag))
+                                .getContactCollection();
                 for (Contact contact: contacts) {
                     if (!isContactExistsInUtilisateurContacts(
                             contact.getId(), idUtilisateur))
                         throw new noContactExistsException();
+                    InvitationPK invitationPK = new InvitationPK();
+                    invitationPK.setEvenementId(idEvenement);
                     invitationPK.setContactId(contact.getId());
-
                     if (isLigneInvitationExist(invitationPK)) {
                         Invitation invitation = invitationFacade
                                 .find(invitationPK);
