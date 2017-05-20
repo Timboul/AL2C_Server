@@ -416,11 +416,12 @@ public class EvenementFacadeREST {
             @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
             JSONArray contacts = new JSONArray(data);
-            ArrayList<String> liste = new ArrayList<String>();
+            ArrayList<Integer> liste = new ArrayList<Integer>();
             for (int i = 0; i < contacts.length(); i++) {
                 JSONObject contact = contacts.getJSONObject(i);
-                liste.add(contact.getString("id"));
+                liste.add(contact.getInt("id"));
             }
+            System.err.println(liste);
             gestionInvitation.inviterContacts(idEvenement, id, liste);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
@@ -437,10 +438,10 @@ public class EvenementFacadeREST {
             @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
             JSONArray contacts = new JSONArray(data);
-            ArrayList<String> liste = new ArrayList<String>();
+            ArrayList<Integer> liste = new ArrayList<Integer>();
             for (int i = 0; i < contacts.length(); i++) {
                 JSONObject contact = contacts.getJSONObject(i);
-                liste.add(contact.getString("id"));
+                liste.add(contact.getInt("id"));
             }
             gestionInvitation.supprimerInvitationContacts(idEvenement, id, liste);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
@@ -458,10 +459,10 @@ public class EvenementFacadeREST {
             @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
             JSONArray tags = new JSONArray(data);
-            ArrayList<String> liste = new ArrayList<String>();
+            ArrayList<Integer> liste = new ArrayList<Integer>();
             for (int i = 0; i < tags.length(); i++) {
                 JSONObject tag = tags.getJSONObject(i);
-                liste.add(tag.getString("id"));
+                liste.add(tag.getInt("id"));
             }
             gestionInvitation.inviterTags(idEvenement, id, liste);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
@@ -479,10 +480,10 @@ public class EvenementFacadeREST {
             @PathParam("idEvenement") Integer idEvenement, String data) {
         try {
             JSONArray tags = new JSONArray(data);
-            ArrayList<String> liste = new ArrayList<String>();
+            ArrayList<Integer> liste = new ArrayList<Integer>();
             for (int i = 0; i < tags.length(); i++) {
                 JSONObject tag = tags.getJSONObject(i);
-                liste.add(tag.getString("id"));
+                liste.add(tag.getInt("id"));
             }
             gestionInvitation.supprimerInvitationTags(idEvenement, id, liste);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),

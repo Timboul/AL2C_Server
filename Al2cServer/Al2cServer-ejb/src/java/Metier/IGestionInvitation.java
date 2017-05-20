@@ -84,7 +84,7 @@ public interface IGestionInvitation {
      * @throws noContactExistsException 
      */
     public void inviterContacts(int idEvenement, int idUtilisateur,
-            List<String> idContacts) throws noContactExistsException;
+            List<Integer> idContacts) throws noContactExistsException;
     
     /**
      * Crée des invitations pour tous les contacts présents dans les tags passés
@@ -95,7 +95,7 @@ public interface IGestionInvitation {
      * @throws noContactExistsException 
      */
     public void inviterTags(int  idEvenement, int idUtilisateur,
-            List<String> idTags) throws noContactExistsException;
+            List<Integer> idTags) throws noContactExistsException;
     
     /**
      * Supprime les invitations de tous les contacts passés en paramètres
@@ -105,7 +105,7 @@ public interface IGestionInvitation {
      * @throws noContactExistsException 
      */
     public void supprimerInvitationContacts(int idEvenement, int idUtilisateur,
-            List<String> idContacts) throws noContactExistsException;
+            List<Integer> idContacts) throws noContactExistsException;
     
     
     /**
@@ -117,6 +117,6 @@ public interface IGestionInvitation {
      * @throws noContactExistsException 
      */
     public void supprimerInvitationTags(int  idEvenement, int idUtilisateur,
-            List<String> idTags) throws noContactExistsException;
+            List<Integer> idTags) throws noContactExistsException;
     
 }

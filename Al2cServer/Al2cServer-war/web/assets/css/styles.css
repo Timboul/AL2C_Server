@@ -8,91 +8,21 @@ body, button, input, optgroup, select, textarea {
 }
 
 /*
- * Navigation
- */
-a:not(.btn-icon) i, button:not(.btn-icon) i {
-    margin-right: 6px;
-}
-a.nav-link.nav-icon {
-    padding: 2px !important;
-    font-size: 24px;
-    position: relative;
-}
-a.nav-link.nav-icon .tag {
-    position: absolute;
-    top: 0;
-    right: -4px;
-    font-size: 12px;
-    font-weight: 600;
-    background-color: #FF9800;
-    color: #fff;
-    border-radius: 8px;
-    padding: 1px 6px;
-}
-
-/*
- * Main layout
- */
-.subtitle {
-    margin-bottom: 2rem;
-}
-
-/*
  * Vitrine
  */
-.vitrine-heading {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-    background-position: 50% 50%;
+.std-header {
+    padding-top: 9rem;
+    padding-bottom: 9rem;
     background-size: cover;
-    margin-top: -3rem;
-    margin-bottom: 3rem;
-}
-.vitrine-heading .title {
-    text-align: center;
-    font-weight: 300;
-    font-size: 3rem;
-    color: #fff;
-}
-.vitrine-heading .title i {
-    margin-right: 1rem;
-}
-.favori {
-    font-size: 24px;
-    color: #FFC107;
-}
-.bg-inverse hr {
-    border-color: rgba(255, 255, 255, .25);
-}
-.bg-inverse .input-group .form-control {
-    border-color: #c8cacb;
-}
-.list-item {
-    display: inline-block;
-    margin-right: 10px;
-}
-.list-enter-active, .list-leave-active {
-    transition: all 1s;
-}
-.list-enter, .list-leave-to /* .list-leave-active for <2.1.8 */ {
-    opacity: 0;
-    transform: translateY(30px);
+    background-position: 50% 50%;
 }
 
-/*
- * Fiche
- */
-.fiche .col-form-label {
-    font-weight: bold;
+h1 {
+    margin: 3rem;
+    text-align: center;
 }
-.no-border {
-    border: none !important;
-}
-.border-dotted {
-    border-style: dotted !important;
-}
-.lead-alt {
-    font-size: 1.05rem;
-    font-weight: 300;
-    line-height: 170%;
+
+h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
