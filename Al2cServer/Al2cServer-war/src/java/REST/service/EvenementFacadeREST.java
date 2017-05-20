@@ -182,11 +182,13 @@ public class EvenementFacadeREST {
             int idLieu = gestionLieu.ajouterLieu(obj.getString("adresse"),
                     complement, obj.getString("codePostal"),
                     obj.getString("ville"));
-            gestionEvenement.creationEvenement(pid, idLieu,
+            int idEvenement = gestionEvenement.creationEvenement(pid, idLieu,
                     obj.getString("intitule"), obj.getString("description"),
                     obj.getString("dateDebut"), dateFin,
                     obj.getInt("nbPlaces"));
-            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+            JSONObject response = new JSONObject();
+            response.put("id", idEvenement);
+            return Response.ok(response.toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();

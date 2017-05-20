@@ -47,7 +47,7 @@ public class GestionEvenement implements IGestionEvenement {
     }
 
     @Override
-    public void creationEvenement(int idUtilisateur, int idLieu,
+    public int creationEvenement(int idUtilisateur, int idLieu,
             String intitule, String description, String dateDebut,
             String dateFin, int nombreInvite)
             throws notFoundUtilisateurException {
@@ -84,6 +84,7 @@ public class GestionEvenement implements IGestionEvenement {
             evenement.setEtatEvenement(EtatEvenement.EN_PREPARATION.toString());
             evenement.setLieuId(lieu);
             evenementFacade.create(evenement);
+            return evenement.getId();
         } catch (Exception e) {
             throw new notFoundUtilisateurException();
         }

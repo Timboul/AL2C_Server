@@ -34,8 +34,9 @@ public interface IGestionEvenement {
      * @param dateFin Date de fin de l'évènement
      * @param nombreInvite Nombre d'invité à l'évènement
      * @throws notFoundUtilisateurException 
+     * @return Retourne l'identifiant de l'évènement créé
      */
-    public void creationEvenement(int idUtilisateur, int idLieu,
+    public int creationEvenement(int idUtilisateur, int idLieu,
             String intitule, String description, String dateDebut,
             String dateFin, int nombreInvite)
             throws notFoundUtilisateurException; // THROWS  quoi mettre qu'elle erreur?? 
