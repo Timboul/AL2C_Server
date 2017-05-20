@@ -25,6 +25,7 @@ import Metier.IGestionLieu;
 import java.util.ArrayList;
 
 /**
+ * Contrôleur permettant la gestion des contacts des évènements
  *
  * @author fez
  */
@@ -45,14 +46,11 @@ public class EvenementFacadeREST {
     @Path("getListeEvenements")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getListeEvenements(@QueryParam("token") int pid) {
-
         try {
             List<Evenement> lesEvents = gestionEvenement
                     .getListeEvenements(pid);
-
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
-
             for (Evenement e : lesEvents) {
                 if (e.getEtatEvenement()
                         .equals(EtatEvenement.PASSE.toString()) || 
@@ -70,22 +68,18 @@ public class EvenementFacadeREST {
                     tempo.put("nbInvites", e.getInvitationCollection().size());
                     tempo.put("nbPlaces", e.getNombreInvites());
                     int nbPresents = 0;
-                    for (Invitation i : e.getInvitationCollection()) {
+                    for (Invitation i : e.getInvitationCollection())
                         if (i.getPresence())
                             nbPresents++;
-                    }
                     tempo.put("nbPresents", nbPresents);
                     tempo.put("adresse", e.getLieuId().getAdresse());
                     tempo.put("complement", e.getLieuId().getComplement());
                     tempo.put("codePostal", e.getLieuId().getCodePostal());
                     tempo.put("ville", e.getLieuId().getVille());
-
                     events.put(tempo);
                 }
             }
-
             obj.put("Evenements", events);
-
             return Response.ok(events.toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
@@ -100,10 +94,8 @@ public class EvenementFacadeREST {
         try {
             List<Evenement> lesEvents = gestionEvenement
                     .getListeEvenements(pid);
-
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
-
             for (Evenement e : lesEvents) {
                 if (e.getEtatEvenement()
                         .equals(EtatEvenement.A_VENIR.toString()) || 
@@ -121,10 +113,9 @@ public class EvenementFacadeREST {
                     tempo.put("nbInvites", e.getInvitationCollection().size());
                     tempo.put("nbPlaces", e.getNombreInvites());
                     int nbPresents = 0;
-                    for (Invitation i : e.getInvitationCollection()) {
+                    for (Invitation i : e.getInvitationCollection())
                         if (i.getPresence())
                             nbPresents++;
-                    }
                     tempo.put("nbPresents", nbPresents);
                     tempo.put("adresse", e.getLieuId().getAdresse());
                     tempo.put("complement", e.getLieuId().getComplement());
@@ -134,7 +125,6 @@ public class EvenementFacadeREST {
                 }
             }
             obj.put("Evenements", events);
-
             return Response.ok(events.toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
@@ -149,7 +139,6 @@ public class EvenementFacadeREST {
             @PathParam("id") Integer idEvenement) {
         try {
             Evenement e = gestionEvenement.afficherEvenement(idEvenement, id);
-
             JSONObject obj = new JSONObject();
             obj.put("id", e.getId());
             obj.put("etat", e.getEtatEvenement());
@@ -161,14 +150,15 @@ public class EvenementFacadeREST {
             obj.put("nbInvites", e.getInvitationCollection().size());
             obj.put("nbPlaces", e.getNombreInvites());
             obj.put("message", e.getMessageInvitation());
-
             int nbPresents = 0;
-            for (Invitation i : e.getInvitationCollection()) {
+            for (Invitation i : e.getInvitationCollection()) 
                 if (i.getPresence())
                     nbPresents++;
-            }
             obj.put("nbPresents", nbPresents);
-            
+            obj.put("adresse", e.getLieuId().getAdresse());
+            obj.put("complement", e.getLieuId().getComplement());
+            obj.put("codePostal", e.getLieuId().getCodePostal());
+            obj.put("ville", e.getLieuId().getVille());
             return Response.ok(obj.toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (notFoundEvenementException e) {
@@ -185,12 +175,10 @@ public class EvenementFacadeREST {
         String dateFin = null;
         try {
             JSONObject obj = new JSONObject(data);
-
             if (obj.has("complement"))
                 complement = obj.getString("complement");
             if (obj.has("dateFin"))
                 dateFin = obj.getString("dateFin");
-
             int idLieu = gestionLieu.ajouterLieu(obj.getString("adresse"),
                     complement, obj.getString("codePostal"),
                     obj.getString("ville"));
@@ -198,7 +186,6 @@ public class EvenementFacadeREST {
                     obj.getString("intitule"), obj.getString("description"),
                     obj.getString("dateDebut"), dateFin,
                     obj.getInt("nbPlaces"));
-
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
@@ -216,12 +203,10 @@ public class EvenementFacadeREST {
         String dateFin = null;
         try {
             JSONObject obj = new JSONObject(data);
-
             if (obj.has("complement"))
                 complement = obj.getString("complement");
             if (obj.has("dateFin"))
                 dateFin = obj.getString("dateFin");
-            
             if (gestionEvenement.isEvenementEnPreparation(idEvent))
                 gestionLieu.modifierLieu(idEvent, pid, obj.getString("adresse"),
                         complement, obj.getString("codePostal"),
@@ -230,7 +215,36 @@ public class EvenementFacadeREST {
                     obj.getString("intitule"), obj.getString("description"),
                     obj.getString("dateDebut"), dateFin,
                     obj.getInt("nombreInvite"));
-
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/annulerEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response annulerEvenement(@QueryParam("token") int pid, 
+            @PathParam("id") Integer idEvent) {
+        try {
+            //TODO voir si on vérifie la valider du token ici
+            gestionEvenement.annulerEvenement(idEvent, pid);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @PUT
+    @Path("{id}/validerEvenement")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response validerEvenement(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            gestionEvenement.validerEvenement(idEvenement, id);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
@@ -336,10 +350,10 @@ public class EvenementFacadeREST {
     public Response getListeNonInvites(@QueryParam("token") int id,
             @PathParam("id") Integer idEvenement) {
         try {
-            List<Contact> contactsNotInvites = gestionInvitation
+            List<Contact> contactsNonInvites = gestionInvitation
                     .getContactsNonInvites(idEvenement, id);
             JSONArray array = new JSONArray();
-            for (Contact contact: contactsNotInvites) {
+            for (Contact contact: contactsNonInvites) {
                 JSONObject tempo = new JSONObject();
                 tempo.put("id", contact.getId());
                 tempo.put("nom", contact.getNom());
@@ -380,9 +394,9 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modifierMessage(@QueryParam("token") int id,
-            @PathParam("id") Integer idEvenement) {
+            @PathParam("id") Integer idEvenement, String data) {
         try {
-            JSONObject obj = new JSONObject();
+            JSONObject obj = new JSONObject(data);
             gestionEvenement.modifierMessageInvitation(idEvenement, id,
                     obj.getString("message"));
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
@@ -476,19 +490,4 @@ public class EvenementFacadeREST {
         }
     }
     
-    @GET
-    @Path("{id}/annulerEvenement")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response annulerEvenement(@QueryParam("token") int pid, 
-            @PathParam("id") Integer idEvent) {
-        try {
-            //TODO voir si on vérifie la valider du token ici
-            gestionEvenement.annulerEvenement(idEvent, pid);
-
-            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
-                    MediaType.APPLICATION_JSON).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-    }
 }

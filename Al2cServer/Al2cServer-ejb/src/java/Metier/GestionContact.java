@@ -52,14 +52,17 @@ public class GestionContact implements IGestionContact {
         // vérifier qu'aucun des champs n'est vide
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-
-            Contact contact = new Contact();
-            contact.setNom(nom);
-            contact.setPrenom(prenom);
-            contact.setUtilisateurId(utilisateur);
-            
-            contactFacade.create(contact);
-            return contact.getId();
+            if (nom.equals("")) nom = null;
+            if (prenom.equals("")) prenom = null;
+            if (!(nom == null && prenom == null)) {
+                Contact contact = new Contact();
+                contact.setNom(nom);
+                contact.setPrenom(prenom);
+                contact.setUtilisateurId(utilisateur);
+                contactFacade.create(contact);
+                return contact.getId();
+            }
+            return -1;
         } catch (Exception e) {
             System.out.println("test " + e.getMessage());
             throw new notFoundUtilisateurException();

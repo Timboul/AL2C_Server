@@ -31,12 +31,10 @@ public class InvitationFacade extends AbstractFacade<Invitation> {
         super(Invitation.class);
     }
     
-    public List<Contact> getNotInvitedContacts(Utilisateur utilisateur, int idEvenement) {
+    public List<Integer> getNotInvitedContacts(int idUtilisateur, int idEvenement) {
         try {
-            return (List<Contact>) em
-                    .createNamedQuery("Invitation.findNotInvited")
-                    .setParameter("utilisateur", utilisateur)
-                    .setParameter("evenementId", idEvenement).getResultList();
+            return em.createNativeQuery("SELECT c.id FROM contact c WHERE c.utilisateur_id = " + idUtilisateur + " AND c.id NOT IN(" +
+                "SELECT DISTINCT d.id from contact d, invitation i, evenement e where d.id = i.contact_id AND i.evenement_id = " + idEvenement + ");").getResultList();
         }catch(Exception e){
             return null;
         }
@@ -49,9 +47,6 @@ public class InvitationFacade extends AbstractFacade<Invitation> {
                 "SELECT c.id FROM contact c WHERE c.utilisateur_id = " + idUtilisateur + " AND c.id NOT IN(" +
                 "SELECT DISTINCT d.id from contact d, invitation i, evenement e where d.id = i.contact_id AND i.evenement_id = " + idEvenement + ")));").getResultList();
         }catch(Exception e){
-            System.err.println("coucou");
-            System.err.println(e.getMessage());
-            System.err.println(e.getLocalizedMessage());
             return null;
         }
     }

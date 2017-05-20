@@ -38,9 +38,8 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundEvenementException {
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            if (utilisateur.getEvenementCollection().isEmpty()) {
+            if (utilisateur.getEvenementCollection().isEmpty())
                 throw new notFoundEvenementException();
-            }
             return (List<Evenement>) utilisateur.getEvenementCollection();
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -57,7 +56,6 @@ public class GestionEvenement implements IGestionEvenement {
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
             Lieu lieu = lieuFacade.find(idLieu);
-
             Evenement evenement = new Evenement();
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
@@ -97,24 +95,19 @@ public class GestionEvenement implements IGestionEvenement {
             String dateFin, int nombreInvite)
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
-        
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
-
             Evenement evenement = evenementFacade.find(idEvenement);
             evenement.setIntitule(intitule);
             evenement.setDescription(description);
             if (isEvenementEnPreparation(idEvenement)) {
                 evenement.setDateDebut(new Date(Long.parseLong(dateDebut)));
-                if (dateFin != null) {
+                if (dateFin != null)
                     evenement.setDateFin(new Date(Long.parseLong(dateFin)));
-                }
             }
             evenement.setNombreInvites(nombreInvite);
-
             evenementFacade.edit(evenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -127,13 +120,10 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundEvenementException {
         // TODO notifier le robot du changement pour prévenir les invités 
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
-
             Evenement evenement = evenementFacade.find(idEvenement);
-            evenement.setIntitule(message);
-
+            evenement.setMessageInvitation(message);
             evenementFacade.edit(evenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -144,9 +134,8 @@ public class GestionEvenement implements IGestionEvenement {
     public Evenement afficherEvenement(int idEvenement, int idUtilisateur)
             throws notFoundEvenementException {
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
             return evenementFacade.find(idEvenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -158,13 +147,10 @@ public class GestionEvenement implements IGestionEvenement {
             throws notFoundEvenementException {
         // on vérifie que l'user à bien cet évenement 
         try {
-            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur)) {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            }
-
             Evenement evenement = evenementFacade.find(idEvenement);
             evenement.setEtatEvenement(EtatEvenement.ANNULE.toString());
-
             evenementFacade.edit(evenement);
         } catch (Exception e) {
             throw new notFoundEvenementException();
@@ -175,13 +161,31 @@ public class GestionEvenement implements IGestionEvenement {
     public boolean isEvenementEnPreparation(int idEvenement) {
         try {
             Evenement evenement = evenementFacade.find(idEvenement);
-            if (evenement.getEtatEvenement() == EtatEvenement.EN_PREPARATION
-                    .toString()) {
+            if (evenement.getEtatEvenement().toString().equals(EtatEvenement
+                    .EN_PREPARATION.toString()))
                 return true;
-            }
             return false;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    @Override
+    public void validerEvenement(int idEvenement, int idUtilisateur)
+            throws notFoundEvenementException {
+        try {
+            if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
+                throw new notFoundEvenementException();
+            if (!isEvenementEnPreparation(idEvenement))
+                throw new notFoundEvenementException();
+            Evenement evenement = evenementFacade.find(idEvenement);
+            Date aujourdhui = new Date();
+            if (!evenement.getDateDebut().after(aujourdhui))
+                throw new notFoundEvenementException();
+            evenement.setEtatEvenement(EtatEvenement.A_VENIR.toString());
+            evenementFacade.edit(evenement);
+        } catch (Exception e) {
+            throw new notFoundEvenementException();
         }
     }
 
@@ -196,7 +200,8 @@ public class GestionEvenement implements IGestionEvenement {
     private boolean isEventExistsOnUserEvents(int idEvenement,
             int idUtilisateur) {
         try {
-            List<Evenement> evenements = (List<Evenement>) utilisateurFacade.find(idUtilisateur)
+            List<Evenement> evenements = (List<Evenement>) 
+                    utilisateurFacade.find(idUtilisateur)
                     .getEvenementCollection();
             for (Evenement evenement : evenements) {
                 if (evenement.getId().equals(idEvenement)) {

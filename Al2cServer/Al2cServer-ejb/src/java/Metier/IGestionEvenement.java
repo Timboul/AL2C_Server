@@ -93,4 +93,14 @@ public interface IGestionEvenement {
      */
     public boolean isEvenementEnPreparation(int idEvenement);
     
+    /**
+     * Valide l'évènement si il est en cours et si la date de début de
+     * l'évenement et future à la date actuelle
+     * @param idEvenement Identifiant de l'évènement
+     * @param idUtilisateur Identifiant de l'utilisateur
+     * @throws notFoundEvenementException 
+     */
+    public void validerEvenement(int idEvenement, int idUtilisateur)
+            throws notFoundEvenementException;
+        
 }

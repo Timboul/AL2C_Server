@@ -122,9 +122,12 @@ public class GestionInvitation implements IGestionInvitation {
         try {
             if (!isEventExistsOnUserEvents(idEvenement, idUtilisateur))
                 throw new notFoundEvenementException();
-            Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            return invitationFacade
-                    .getNotInvitedContacts(utilisateur, idEvenement);
+            List<Integer> idContacts = invitationFacade
+                    .getNotInvitedContacts(idUtilisateur, idEvenement);
+            ArrayList<Contact> contacts = new ArrayList<Contact>();
+            for (int idContact: idContacts)
+                contacts.add(contactFacade.find(idContact));
+            return (List<Contact>) contacts;
         } catch (Exception e) {
             throw new notFoundEvenementException();
         }

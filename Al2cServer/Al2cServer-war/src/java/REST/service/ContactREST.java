@@ -2,7 +2,6 @@ package REST.service;
 
 import Entities.Canal;
 import Entities.Contact;
-import Entities.util.TypeCanal;
 import Exception.noContactExistsException;
 import Exception.unknowUserIdException;
 import java.util.List;
@@ -23,7 +22,7 @@ import Metier.IGestionCanal;
 import Metier.IGestionContact;
 
 /**
- * Contrôleur permettant la gestion des contacts de l'utilisateur
+ * Contrôleur permettant la gestion des contacts
  * 
  * @author Alexandre Bertrand
  */
@@ -53,7 +52,6 @@ public class ContactREST {
                 contacts.put(tempo);
             }
             obj.put("contacts", contacts);
-
             return Response.ok(contacts.toString(), MediaType.APPLICATION_JSON)
                     .build();
         } catch (noContactExistsException | unknowUserIdException e) {
@@ -70,14 +68,16 @@ public class ContactREST {
             JSONObject obj = new JSONObject(data);
             int contactId = gestionContact.ajouterContact(id,
                     obj.getString("nom"), obj.getString("prenom"));
-            JSONArray canaux = new JSONArray(obj.getJSONArray("canaux").toString());
-            for (int i = 0; i < canaux.length(); i++) {                
-                JSONObject canal = new JSONObject(canaux.get(i).toString());
-                gestionCanal.ajouterCanal(contactId, id,
-                        canal.getString("valeur"),
-                        canal.getString("typeCanal"));
+            if (contactId > 0) {
+                JSONArray canaux = new JSONArray(obj
+                        .getJSONArray("canaux").toString());
+                for (int i = 0; i < canaux.length(); i++) {                
+                    JSONObject canal = new JSONObject(canaux.get(i).toString());
+                    gestionCanal.ajouterCanal(contactId, id,
+                            canal.getString("valeur"),
+                            canal.getString("typeCanal"));
+                }
             }
-            
             return Response.ok(new JSONObject().put("statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
@@ -157,10 +157,12 @@ public class ContactREST {
             gestionContact.modifierContact(idContact, id, obj.getString("nom"),
                     obj.getString("prenom"));
 
-            JSONArray canaux = new JSONArray(obj.getJSONArray("canaux").toString());
+            JSONArray canaux = new JSONArray(obj
+                    .getJSONArray("canaux").toString());
             for (int i = 0; i < canaux.length(); i++) {                
                 JSONObject canal = new JSONObject(canaux.get(i).toString());
-                gestionCanal.modifierCanal(Integer.parseInt(canal.getString("id")), id,
+                gestionCanal.modifierCanal(Integer
+                        .parseInt(canal.getString("id")), id,
                         canal.getString("valeur"),
                         canal.getString("typeCanal"));
             }
@@ -183,12 +185,15 @@ public class ContactREST {
                 JSONObject contact = new JSONObject(contacts.get(i).toString());                
                 int contactId = gestionContact.ajouterContact(id, 
                         contact.getString("nom"), contact.getString("prenom"));
-                JSONArray canaux = new JSONArray(contact.getJSONArray("canaux").toString());
-                for (int j = 0; j < canaux.length(); j++) {                
-                    JSONObject canal = new JSONObject(canaux.get(j).toString());
-                    gestionCanal.ajouterCanal(contactId, id,
-                            canal.getString("valeur"),
-                            canal.getString("typeCanal"));
+                if (contactId > 0) {
+                    JSONArray canaux = new JSONArray(contact
+                            .getJSONArray("canaux").toString());
+                    for (int j = 0; j < canaux.length(); j++) {                
+                        JSONObject canal = new JSONObject(canaux.get(j).toString());
+                        gestionCanal.ajouterCanal(contactId, id,
+                                canal.getString("valeur"),
+                                canal.getString("typeCanal"));
+                    }
                 }
             }
             return Response.ok(new JSONObject().put("statut", "ok").toString(),

@@ -47,9 +47,7 @@ public class Contact implements Serializable {
     @Column(name = "id")
     private Integer id;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 30)
+    @Size(max = 30)
     @Column(name = "nom")
     private String nom;
     

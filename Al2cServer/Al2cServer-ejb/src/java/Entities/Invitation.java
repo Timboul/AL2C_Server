@@ -24,9 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Invitation.findAll", query = "SELECT i FROM Invitation i")
     , @NamedQuery(name = "Invitation.findByEvenementId", query = "SELECT i FROM Invitation i WHERE i.invitationPK.evenementId = :evenementId")
     , @NamedQuery(name = "Invitation.findByContactId", query = "SELECT i FROM Invitation i WHERE i.invitationPK.contactId = :contactId")
-    , @NamedQuery(name = "Invitation.findByPresence", query = "SELECT i FROM Invitation i WHERE i.presence = :presence")
-    , @NamedQuery(name = "Invitation.findNotInvited", query = "SELECT c FROM Contact c WHERE c.utilisateurId = :utilisateurId AND c.id NOT IN(" +
-            "SELECT DISTINCT d.id from Contact d, Invitation i, Evenement e where d.id = i.invitationPK.contactId AND i.invitationPK.evenementId = :evenementId)")})
+    , @NamedQuery(name = "Invitation.findByPresence", query = "SELECT i FROM Invitation i WHERE i.presence = :presence")})
 public class Invitation implements Serializable {
 
     private static final long serialVersionUID = 1L;
