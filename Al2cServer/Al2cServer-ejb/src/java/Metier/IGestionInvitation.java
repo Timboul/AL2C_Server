@@ -119,4 +119,15 @@ public interface IGestionInvitation {
     public void supprimerInvitationTags(int  idEvenement, int idUtilisateur,
             List<Integer> idTags) throws noContactExistsException;
     
+    /**
+     * Enregistre la réponse d'un contact à une invitation
+     * @param tokenComplet Token comprennant le token de l'invitation,
+     *                     l'identifiant de l'évènement et l'identifiant du
+     *                     contact
+     * @param reponse Réponse à l'invitation de l'utilisateur
+     * @throws noContactExistsException 
+     */
+    public void validerReponseInvitation(String tokenComplet, boolean reponse)
+            throws noContactExistsException;
+    
 }

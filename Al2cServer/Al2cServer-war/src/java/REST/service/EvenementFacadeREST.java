@@ -421,7 +421,6 @@ public class EvenementFacadeREST {
                 JSONObject contact = contacts.getJSONObject(i);
                 liste.add(contact.getInt("id"));
             }
-            System.err.println(liste);
             gestionInvitation.inviterContacts(idEvenement, id, liste);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
@@ -486,6 +485,23 @@ public class EvenementFacadeREST {
                 liste.add(tag.getInt("id"));
             }
             gestionInvitation.supprimerInvitationTags(idEvenement, id, liste);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @POST
+    @Path("validerInvitation")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response validerInvitation(@QueryParam("token") int id,
+            String data) {
+        try {
+            JSONObject obj = new JSONObject(data);
+            gestionInvitation.validerReponseInvitation(obj.getString("token"),
+                    Boolean.parseBoolean(obj.getString("presence")));
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {

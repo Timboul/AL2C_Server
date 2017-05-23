@@ -74,8 +74,8 @@ public class GestionEvenement implements IGestionEvenement {
             }
             evenement.setNombreInvites(nombreInvite);
             evenement.setMessageInvitation("Bonjour ! Nous sommes heureux de "
-                    + "vous annoncer que vous êtes invités à l'évènement " 
-                    + intitule + " organisé par " + utilisateur.getPrenom() 
+                    + "vous annoncer que vous êtes invités à l'évènement \"" 
+                    + intitule + "\" organisé par " + utilisateur.getPrenom() 
                     + " " + utilisateur.getNom() + " qui aura lieu " + periode 
                     + " à l'adresse :" + "\n" + lieu.getAdresse() + "\n" 
                     + lieu.getComplement() + "\n" + lieu.getCodePostal() + ", " 

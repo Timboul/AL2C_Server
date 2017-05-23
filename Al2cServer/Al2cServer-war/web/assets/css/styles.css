@@ -26,3 +26,31 @@ h2 {
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
+
+.carton-invitation
+{
+    margin: 0 auto;
+    width: 75%;
+    background-color: #293546;
+    -moz-box-shadow: 5px 5px 20px 1px #656565;
+    -webkit-box-shadow: 5px 5px 20px 1px #656565;
+    -o-box-shadow: 5px 5px 20px 1px #656565;
+    box-shadow: 5px 5px 20px 1px #656565;
+    filter:progid:DXImageTransform.Microsoft.Shadow(color=#656565, Direction=134, Strength=20);
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.texte-invitation
+{
+    padding: 1rem;
+    font-size: 125%;
+    font-weight: bold;
+    color: #fff;
+}
+
+.libelle-carton
+{
+    padding-left: 12%;
+}

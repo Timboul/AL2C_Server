@@ -10,7 +10,6 @@ import Entities.Evenement;
 import Entities.Invitation;
 import Entities.InvitationPK;
 import Entities.Tag;
-import Entities.Utilisateur;
 import Entities.util.EtatEvenement;
 import Exception.deleteNotPossible;
 import Exception.noContactExistsException;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Implémentation de la gestion des invitations
@@ -169,6 +169,7 @@ public class GestionInvitation implements IGestionInvitation {
                     Invitation invitation = new Invitation();
                     invitation.setContact(contact);
                     invitation.setEvenement(evenement);
+                    invitation.setToken(RandomStringUtils.randomAlphanumeric(12));
                     invitation.setReponse(false);
                     invitation.setPresence(false);
                     invitation.setInvitationPK(invitationPK);
@@ -204,6 +205,7 @@ public class GestionInvitation implements IGestionInvitation {
                         Invitation invitation = new Invitation();
                         invitation.setContact(contact);
                         invitation.setEvenement(evenement);
+                        invitation.setToken(RandomStringUtils.randomAlphanumeric(12));
                         invitation.setReponse(false);
                         invitation.setPresence(false);
                         invitation.setInvitationPK(invitationPK);
@@ -274,6 +276,31 @@ public class GestionInvitation implements IGestionInvitation {
                         invitationFacade.remove(invitation);
                     }
                 }
+            }
+        } catch (Exception e) {
+            throw new noContactExistsException();
+        }
+    }
+
+    @Override
+    public void validerReponseInvitation(String tokenComplet, boolean reponse)
+            throws noContactExistsException {
+        try {
+            String token = tokenComplet.substring(0, tokenComplet.indexOf("_"));
+            String idContact = tokenComplet.substring(tokenComplet.indexOf("_")
+                    + 1, tokenComplet.lastIndexOf("_"));
+            String idEvenement = tokenComplet.substring(tokenComplet
+                    .lastIndexOf("_") + 1);
+            InvitationPK invitationPK = new InvitationPK();
+            invitationPK.setContactId(Integer.parseInt(idContact));
+            invitationPK.setEvenementId(Integer.parseInt(idEvenement));
+            Invitation invitation = invitationFacade.find(invitationPK);
+            if (invitation != null) {
+                if(!invitation.getToken().equals(token))
+                    throw new noContactExistsException();
+                invitation.setReponse(true);
+                invitation.setPresence(reponse);
+                invitationFacade.edit(invitation);
             }
         } catch (Exception e) {
             throw new noContactExistsException();
