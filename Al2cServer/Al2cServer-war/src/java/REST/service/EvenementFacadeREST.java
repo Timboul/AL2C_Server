@@ -177,6 +177,9 @@ public class EvenementFacadeREST {
             JSONObject obj = new JSONObject(data);
             if (obj.has("complement"))
                 complement = obj.getString("complement");
+            else
+                complement="";
+            
             if (obj.has("dateFin"))
                 dateFin = obj.getString("dateFin");
             int idLieu = gestionLieu.ajouterLieu(obj.getString("adresse"),
@@ -215,11 +218,12 @@ public class EvenementFacadeREST {
                         obj.getString("ville"));
             gestionEvenement.modifierEvenement(idEvent, pid,
                     obj.getString("intitule"), obj.getString("description"),
-                    obj.getString("dateDebut"), dateFin,
-                    obj.getInt("nombreInvite"));
+                   String.valueOf(obj.getInt("dateDebut")), dateFin,
+                    obj.getInt("nbPlaces"));
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
