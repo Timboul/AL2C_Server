@@ -10,6 +10,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta content="width=device-width,initial-scale=1" name="viewport">
+        <meta content="SafeTheDate" name="author">
         <link href="<c:url value="/assets/css/bootstrap.min.css" />" rel="stylesheet">
         <link href="<c:url value="/assets/css/styles.css" />" rel="stylesheet">
         <title>Safe The Date - Vous êtes invités</title>
