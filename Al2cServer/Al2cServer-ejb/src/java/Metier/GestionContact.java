@@ -40,7 +40,10 @@ public class GestionContact implements IGestionContact {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
             if (utilisateur.getContactCollection().isEmpty())
                 throw new noContactExistsException();
-            return (List<Contact>) utilisateur.getContactCollection();
+            List<Contact> contacts = (List<Contact>) utilisateur.getContactCollection();
+            contacts.sort((c1, c2) -> c1.getNom().compareTo(c2.getNom()));
+            contacts.sort((c1, c2) -> c1.getPrenom().compareTo(c2.getPrenom()));
+            return contacts;
         } catch (Exception e) {
             throw new unknowUserIdException();
         }
@@ -52,8 +55,6 @@ public class GestionContact implements IGestionContact {
         // vérifier qu'aucun des champs n'est vide
         try {
             Utilisateur utilisateur = utilisateurFacade.find(idUtilisateur);
-            if (nom.equals("")) nom = null;
-            if (prenom.equals("")) prenom = null;
             if (!(nom == null && prenom == null)) {
                 Contact contact = new Contact();
                 contact.setNom(nom);
@@ -64,7 +65,6 @@ public class GestionContact implements IGestionContact {
             }
             return -1;
         } catch (Exception e) {
-            System.out.println("test " + e.getMessage());
             throw new notFoundUtilisateurException();
         }
     }

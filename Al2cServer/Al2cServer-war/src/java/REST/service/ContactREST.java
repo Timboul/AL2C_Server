@@ -64,10 +64,13 @@ public class ContactREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response creerContact(@QueryParam("token") int id, String data) {
+        String nom = null;
+        String prenom = null;
         try {
             JSONObject obj = new JSONObject(data);
-            int contactId = gestionContact.ajouterContact(id,
-                    obj.getString("nom"), obj.getString("prenom"));
+            if (obj.has("nom")) nom = obj.getString("nom");
+            if (obj.has("prenom")) prenom = obj.getString("prenom");
+            int contactId = gestionContact.ajouterContact(id, nom, prenom);
             if (contactId > 0) {
                 JSONArray canaux = new JSONArray(obj
                         .getJSONArray("canaux").toString());
@@ -93,7 +96,6 @@ public class ContactREST {
         try {
             
             Contact leContact = gestionContact.afficherContact(idContact, id);
-            System.out.println(leContact.getNom());
             
             JSONObject obj = new JSONObject();
             obj.put("id", leContact.getId());
@@ -182,9 +184,12 @@ public class ContactREST {
         try {
             JSONArray contacts = new JSONArray(data);
             for (int i = 0; i < contacts.length(); i++) { 
-                JSONObject contact = new JSONObject(contacts.get(i).toString());                
-                int contactId = gestionContact.ajouterContact(id, 
-                        contact.getString("nom"), contact.getString("prenom"));
+                JSONObject contact = new JSONObject(contacts.get(i).toString());
+                String nom = null;
+                String prenom = null;
+                if (contact.has("nom")) nom = contact.getString("nom");
+                if (contact.has("prenom")) prenom = contact.getString("prenom");
+                int contactId = gestionContact.ajouterContact(id, nom, prenom);
                 if (contactId > 0) {
                     JSONArray canaux = new JSONArray(contact
                             .getJSONArray("canaux").toString());

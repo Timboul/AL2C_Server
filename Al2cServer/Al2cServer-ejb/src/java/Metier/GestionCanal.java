@@ -40,9 +40,7 @@ public class GestionCanal implements IGestionCanal {
             
             Canal canal = new Canal();
             canal.setValeur(valeur);
-            System.out.println("avant");
             canal.setTypeCanal(TypeCanal.valueOf(typeCanal).toString());
-            System.out.println("après");
             canal.setContactId(contact);
 
             canalFacade.create(canal);
