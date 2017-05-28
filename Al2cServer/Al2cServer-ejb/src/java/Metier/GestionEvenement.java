@@ -41,6 +41,7 @@ public class GestionEvenement implements IGestionEvenement {
             if (utilisateur.getEvenementCollection().isEmpty())
                 throw new notFoundEvenementException();
             List<Evenement> evenements = (List<Evenement>) utilisateur.getEvenementCollection();
+            evenements.sort((e1, e2) -> e1.getDateDebut().compareTo(e2.getDateDebut()));
             return evenements;
         } catch (Exception e) {
             throw new notFoundEvenementException();

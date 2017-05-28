@@ -41,6 +41,14 @@ public class GestionContact implements IGestionContact {
             if (utilisateur.getContactCollection().isEmpty())
                 throw new noContactExistsException();
             List<Contact> contacts = (List<Contact>) utilisateur.getContactCollection();
+            for (Contact contact: contacts) {
+                if (contact.getNom() == null)
+                    contact.setNom("");
+                if (contact.getPrenom() == null)
+                    contact.setPrenom("");
+            }
+            contacts.sort((c1, c2) -> c1.getNom().compareTo(c2.getNom()));
+            contacts.sort((c1, c2) -> c1.getPrenom().compareTo(c2.getPrenom()));
             return contacts;
         } catch (Exception e) {
             throw new unknowUserIdException();
