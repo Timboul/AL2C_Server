@@ -223,7 +223,6 @@ public class EvenementFacadeREST {
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
@@ -502,7 +501,9 @@ public class EvenementFacadeREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response validerInvitation(String data) {
         try {
-            JSONObject obj = new JSONObject(data);
+            JSONObject response = new JSONObject(data);
+            JSONArray array = response.getJSONArray("messages");
+            JSONObject obj = array.getJSONObject(0);
             gestionInvitation.validerReponseInvitation(obj.getString("conversationId"),
                     Boolean.parseBoolean(obj.getString("presence")));
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
@@ -518,8 +519,10 @@ public class EvenementFacadeREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response creerInvitationPremierContact(String data) {
         try {
-            System.err.println("appel fonctionne");
-            gestionInvitation.creerInvitationPremierContact(data);
+            JSONObject response = new JSONObject(data);
+            JSONArray array = response.getJSONArray("messages");
+            JSONObject obj = array.getJSONObject(0);
+            gestionInvitation.creerInvitationPremierContact(obj.toString());
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {

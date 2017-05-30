@@ -24,11 +24,20 @@ import java.io.InputStreamReader;
 import org.json.*;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.RandomStringUtils;
 import sun.nio.cs.ext.ISO2022_CN;
 
@@ -370,8 +379,15 @@ public class GestionInvitation implements IGestionInvitation {
                         getJsonInvitation(canal, invitation.getEvenement());
                         contacte = true;
                     } else if (canal.getTypeCanal().equals(TypeCanal.MAIL.toString())) {
-                        // TODO Gestion de l'envoi des mails
-                        contacte = true;
+                        Contact contact = invitation.getContact();
+                        Evenement evenement = invitation.getEvenement();
+                        String subject = "Invitation à l'évènement \"" + evenement.getIntitule() + "\"";
+                        String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\n" +
+                                "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\n" +
+                                "Pour répondre à mon invitation, je t'invite à cliquer sur le lien suivant : " +
+                                "http://al2c.dtdns.net/Al2cServer-war/webresources/vous-etes-invite?token=" + invitation.getToken() + " \n" +
+                                "A bientôt !";
+                        sendMail(canal.getValeur(), subject, text);
                     }
                     if (contacte) {
                         invitation.setReponse(EtatInvitation.EN_ATTENTE.toString());
@@ -420,7 +436,28 @@ public class GestionInvitation implements IGestionInvitation {
                             contacte = true;
                         } else if (canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.MAIL) > 0) {
                             canal = canalFacade.find(canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.MAIL));
+                            Contact contact = invitation.getContact();
+                            String subject = "Invitation à l'évènement \"" + invitation.getEvenement().getIntitule() + "\"";
+                            if (canal.getReponse()) {
+                                String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\n" +
+                                        "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\n" +
+                                        "Pour répondre à mon invitation, je t'invite à cliquer sur le lien suivant : " +
+                                        "http://al2c.dtdns.net/Al2cServer-war/webresources/vous-etes-invite?token=" + invitation.getToken() + " \n" +
+                                        "A bientôt !";
+                                sendMail(canal.getValeur(), subject, text);
+                            } else {
+                                String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\n" +
+                                        "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\n" +
+                                        "Pour répondre à mon invitation tu peut contacter le service SaveTheDate de plusieurs façon :\n" +
+                                        " - par Messenger en suivant le lien suivant : m.me/SaveTheDateAL2C \n" +
+                                        " - en suivant le lien : http://al2c.dtdns.net/Al2cServer-war/webresources/vous-etes-invite?token=" 
+                                        + invitation.getToken() + " \n" +
+                                        "A bientôt !";
+                                sendMail(canal.getValeur(), subject, text);
+                            }
                             // TODO Gestion de l'envoi des mails
+                            canal.setReponse(true);
+                            canalFacade.edit(canal);
                             contacte = true;
                         }
                         if (contacte) {
@@ -460,6 +497,7 @@ public class GestionInvitation implements IGestionInvitation {
                 if (c != null) {
                     canal.setContactId(c);
                     canal.setReponse(true);
+                    canal.setValeur(c.getPrenom() + c.getNom());
                     canal.setTypeCanal(TypeCanal.FACEBOOK.toString());
                     canal.setConversationId(infos.getString("conversationId"));
                     canalFacade.create(canal);
@@ -490,8 +528,6 @@ public class GestionInvitation implements IGestionInvitation {
         message.put("content", evenement.getMessageInvitation());
         array.put(message);
         obj.put("messages", array);
-        System.err.println(obj);
-        System.err.println(canal.getConversationId());
         envoyerMessage(canal.getConversationId(), obj);
     }
     
@@ -525,6 +561,43 @@ public class GestionInvitation implements IGestionInvitation {
                 connection.disconnect();
             }
         }
+    }
+    
+    private void sendMail(String addresse, String subject, String text) throws AddressException, MessagingException {
+        /*
+        final String username = "savethedate.al2c@gmail.com";
+        final String password = "al2cmiage";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        PasswordAuthentication passwordAuthentication = new PasswordAuthentication(username, password.toCharArray());
+        
+        Session session = Session.getInstance(props,
+                
+                new javax.mail.Authenticator() {passwordAuthentication}
+        });
+        
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("savethedate.al2c@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(addresse));
+            message.setSubject(subject);
+            message.setText(text);
+
+            Transport.send(message);
+
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        */
     }
     
     /**
