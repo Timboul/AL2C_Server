@@ -39,8 +39,14 @@ public class GestionCanal implements IGestionCanal {
             Contact contact = contactFacade.find(idContact);
             
             Canal canal = new Canal();
-            canal.setValeur(valeur);
             canal.setTypeCanal(TypeCanal.valueOf(typeCanal).toString());
+            if (TypeCanal.valueOf(typeCanal).toString().equals(TypeCanal.SMS.toString())) {
+                valeur = valeur.replaceAll("\\s", "");
+                if (valeur.charAt(0) == '0')
+                    valeur = valeur.replaceFirst("0", "+33");
+            }
+            canal.setValeur(valeur);
+            canal.setReponse(false);
             canal.setContactId(contact);
 
             canalFacade.create(canal);
@@ -57,9 +63,14 @@ public class GestionCanal implements IGestionCanal {
             if (!isCanalExistsInUtilisateurCanaux(idCanal,
                     canal.getContactId().getId(), idUtilisateur))
                 throw new noCanalFoundException();
-            canal.setValeur(valeur);
             canal.setTypeCanal(TypeCanal.valueOf(typeCanal).toString());
-
+            if (TypeCanal.valueOf(typeCanal).toString().equals(TypeCanal.SMS.toString())) {
+                valeur = valeur.replaceAll("\\s", "");
+                if (valeur.charAt(0) == '0')
+                    valeur = valeur.replaceFirst("0", "+33");
+            }
+            canal.setValeur(valeur);
+            
             canalFacade.edit(canal);
         } catch (Exception e) {
             throw new noCanalFoundException();

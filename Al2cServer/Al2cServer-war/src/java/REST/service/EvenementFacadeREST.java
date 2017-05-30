@@ -500,11 +500,10 @@ public class EvenementFacadeREST {
     @Path("validerInvitation")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response validerInvitation(@QueryParam("token") int id,
-            String data) {
+    public Response validerInvitation(String data) {
         try {
             JSONObject obj = new JSONObject(data);
-            gestionInvitation.validerReponseInvitation(obj.getString("token"),
+            gestionInvitation.validerReponseInvitation(obj.getString("conversationId"),
                     Boolean.parseBoolean(obj.getString("presence")));
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
@@ -513,4 +512,31 @@ public class EvenementFacadeREST {
         }
     }
     
+    @POST
+    @Path("creerInvitationPremierContact")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response creerInvitationPremierContact(String data) {
+        try {
+            gestionInvitation.creerInvitationPremierContact(data);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getMessagesInvitation")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMessagesInvitation(@QueryParam("token") int id,
+            @PathParam("id") Integer idEvenement) {
+        try {
+            return Response.ok(gestionInvitation.creerListeMessagesInvitations(idEvenement),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+        
 }

@@ -36,7 +36,7 @@ public class Invitation implements Serializable {
     protected InvitationPK invitationPK;
     
     @Column(name = "reponse")
-    private Boolean reponse;
+    private String reponse;
     
     @Column(name = "presence")
     private Boolean presence;
@@ -82,11 +82,11 @@ public class Invitation implements Serializable {
         this.token = token;
     }
     
-    public Boolean getReponse() {
+    public String getReponse() {
         return reponse;
     }
 
-    public void setReponse(Boolean reponse) {
+    public void setReponse(String reponse) {
         this.reponse = reponse;
     }
 

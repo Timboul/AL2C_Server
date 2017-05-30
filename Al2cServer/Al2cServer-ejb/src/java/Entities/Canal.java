@@ -28,7 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Canal.findAll", query = "SELECT c FROM Canal c")
     , @NamedQuery(name = "Canal.findById", query = "SELECT c FROM Canal c WHERE c.id = :id")
     , @NamedQuery(name = "Canal.findByValeur", query = "SELECT c FROM Canal c WHERE c.valeur = :valeur")
-    , @NamedQuery(name = "Canal.findByTypeCanal", query = "SELECT c FROM Canal c WHERE c.typeCanal = :typeCanal")})
+    , @NamedQuery(name = "Canal.findByTypeCanal", query = "SELECT c FROM Canal c WHERE c.typeCanal = :typeCanal")
+    , @NamedQuery(name = "Canal.findByConversationId", query = "SELECT c FROM Canal c WHERE c.conversationId = :conversationId")})
 public class Canal implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,12 +41,18 @@ public class Canal implements Serializable {
     private Integer id;
     
     @Size(max = 80)
+    @Column(name = "conversation_id")
+    private String conversationId;
+    
+    @Size(max = 80)
     @Column(name = "valeur")
     private String valeur;
     
-    @Size(max = 8)
     @Column(name = "type_canal")
     private String typeCanal;
+    
+    @Column(name = "reponse")
+    private Boolean reponse;
     
     @JoinColumn(name = "contact_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
@@ -65,13 +72,21 @@ public class Canal implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
+    
     public String getValeur() {
         return valeur;
     }
 
     public void setValeur(String valeur) {
         this.valeur = valeur;
+    }
+
+    public String getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(String conversationId) {
+        this.conversationId = conversationId;
     }
 
     public String getTypeCanal() {
@@ -81,7 +96,15 @@ public class Canal implements Serializable {
     public void setTypeCanal(String typeCanal) {
         this.typeCanal = typeCanal;
     }
-
+    
+    public Boolean getReponse() {
+        return reponse;
+    }
+    
+    public void setReponse(Boolean reponse) {
+        this.reponse = reponse;
+    }
+    
     public Contact getContactId() {
         return contactId;
     }

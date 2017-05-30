@@ -127,7 +127,20 @@ public interface IGestionInvitation {
      * @param reponse Réponse à l'invitation de l'utilisateur
      * @throws noContactExistsException 
      */
-    public void validerReponseInvitation(String tokenComplet, boolean reponse)
+    public void validerReponseInvitationMail(String tokenComplet, boolean reponse)
             throws noContactExistsException;
+    
+    /**
+     * Enregistre la réponse d'un contact à une invitation
+     * @param conversationId L'identifiant de la converssation
+     * @param reponse Réponse à l'invitation de l'utilisateur
+     * @throws noContactExistsException 
+     */
+    public void validerReponseInvitation(String conversationId, boolean reponse)
+            throws noContactExistsException;
+    
+    public String creerListeMessagesInvitations(int evenementId);
+    
+    public void creerInvitationPremierContact(String data);
     
 }

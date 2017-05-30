@@ -1,19 +1,30 @@
 package Metier;
 
+import Controllers.CanalFacade;
 import Controllers.ContactFacade;
 import Controllers.EvenementFacade;
 import Controllers.InvitationFacade;
 import Controllers.TagFacade;
 import Controllers.UtilisateurFacade;
+import Entities.Canal;
 import Entities.Contact;
 import Entities.Evenement;
 import Entities.Invitation;
 import Entities.InvitationPK;
 import Entities.Tag;
 import Entities.util.EtatEvenement;
+import Entities.util.EtatInvitation;
+import Entities.util.TypeCanal;
 import Exception.deleteNotPossible;
 import Exception.noContactExistsException;
 import Exception.notFoundEvenementException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import org.json.*;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -38,6 +49,9 @@ public class GestionInvitation implements IGestionInvitation {
     private ContactFacade contactFacade;
     
     @EJB
+    private CanalFacade canalFacade;
+    
+    @EJB
     private TagFacade tagFacade;
     
     @EJB
@@ -54,7 +68,8 @@ public class GestionInvitation implements IGestionInvitation {
             ArrayList<Contact> contacts = new ArrayList<Contact>();
             for (Invitation invitation: invitations)
                 if (invitation.getPresence() == true &&
-                    invitation.getReponse() == true)
+                    invitation.getReponse()
+                            .equals(EtatInvitation.REPONDU.toString()))
                     contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
@@ -73,7 +88,8 @@ public class GestionInvitation implements IGestionInvitation {
             ArrayList<Contact> contacts = new ArrayList<Contact>();
             for (Invitation invitation: invitations)
                 if (invitation.getPresence() == false &&
-                    invitation.getReponse() == true)
+                    invitation.getReponse()
+                            .equals(EtatInvitation.REPONDU.toString()))
                     contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
@@ -91,7 +107,8 @@ public class GestionInvitation implements IGestionInvitation {
                     evenementFacade.find(idEvenement).getInvitationCollection();
             ArrayList<Contact> contacts = new ArrayList<Contact>();
             for (Invitation invitation: invitations)
-                if (invitation.getReponse() == false)
+                if (!invitation.getReponse()
+                            .equals(EtatInvitation.REPONDU.toString()))
                     contacts.add(invitation.getContact());
             return (List<Contact>) contacts;
         } catch (Exception e) {
@@ -170,11 +187,14 @@ public class GestionInvitation implements IGestionInvitation {
                     invitation.setContact(contact);
                     invitation.setEvenement(evenement);
                     invitation.setToken(RandomStringUtils.randomAlphanumeric(12));
-                    invitation.setReponse(false);
+                    invitation.setReponse(EtatInvitation.NON_DEMANDEE.toString());
                     invitation.setPresence(false);
                     invitation.setInvitationPK(invitationPK);
 
                     invitationFacade.create(invitation);
+                }
+                if (evenement.getEtatEvenement().equals(EtatEvenement.A_VENIR)) {
+                    // TODO envoyer les invitations
                 }
             }
         } catch (Exception e) {
@@ -206,11 +226,13 @@ public class GestionInvitation implements IGestionInvitation {
                         invitation.setContact(contact);
                         invitation.setEvenement(evenement);
                         invitation.setToken(RandomStringUtils.randomAlphanumeric(12));
-                        invitation.setReponse(false);
+                        invitation.setReponse(EtatInvitation.NON_DEMANDEE.toString());
                         invitation.setPresence(false);
                         invitation.setInvitationPK(invitationPK);
-
                         invitationFacade.create(invitation);
+                    }
+                    if (evenement.getEtatEvenement().equals(EtatEvenement.A_VENIR)) {
+                        // TODO envoyer les invitations
                     }
                 }
             }
@@ -283,7 +305,7 @@ public class GestionInvitation implements IGestionInvitation {
     }
 
     @Override
-    public void validerReponseInvitation(String tokenComplet, boolean reponse)
+    public void validerReponseInvitationMail(String tokenComplet, boolean reponse)
             throws noContactExistsException {
         try {
             String token = tokenComplet.substring(0, tokenComplet.indexOf("_"));
@@ -298,12 +320,199 @@ public class GestionInvitation implements IGestionInvitation {
             if (invitation != null) {
                 if(!invitation.getToken().equals(token))
                     throw new noContactExistsException();
-                invitation.setReponse(true);
+                invitation.setReponse(EtatInvitation.REPONDU.toString());
                 invitation.setPresence(reponse);
                 invitationFacade.edit(invitation);
             }
         } catch (Exception e) {
             throw new noContactExistsException();
+        }
+    }
+    
+    @Override
+    public void validerReponseInvitation(String conversationId, boolean reponse)
+            throws noContactExistsException {
+        try {
+            Canal canal = canalFacade.findByConversationId(conversationId);
+            canal.setReponse(true);
+            canalFacade.edit(canal);
+            InvitationPK invitationPK = new InvitationPK();
+            invitationPK.setContactId(canal.getContactId().getId());
+            invitationPK.setEvenementId(invitationFacade.getInvitationEnAttente(canal.getContactId().getId()));
+            Invitation invitation = invitationFacade.find(invitationPK);
+            if (invitation != null) {
+                invitation.setReponse(EtatInvitation.REPONDU.toString());
+                invitation.setPresence(reponse);
+                invitationFacade.edit(invitation);
+                if (evenementFacade.findNextEvenementAVenirByIdContact(canal.getContactId().getId()) > 0) {
+                    InvitationPK newInvitationPK = new InvitationPK();
+                    newInvitationPK.setContactId(canal.getContactId().getId());
+                    newInvitationPK.setEvenementId(evenementFacade.findNextEvenementAVenirByIdContact(canal.getContactId().getId()));
+                    Invitation newInvitation = invitationFacade.find(newInvitationPK);
+                    creerMessageInvitation(newInvitation, canal);
+                }
+            }
+        } catch (Exception e) {
+            throw new noContactExistsException();
+        }
+    }
+    
+    public void creerMessageInvitation(Invitation invitation, Canal canal) {
+        try {
+            if (invitation.getReponse()
+                    .equals(EtatInvitation.NON_DEMANDEE.toString())) {
+                if (invitationFacade.getInvitationEnAttente(
+                        invitation.getContact().getId()) == 0) {
+                    Boolean contacte = false;
+                    if (canal.getTypeCanal().equals(TypeCanal.FACEBOOK.toString()) ||
+                        canal.getTypeCanal().equals(TypeCanal.SMS.toString())) {
+                        getJsonInvitation(canal, invitation.getEvenement());
+                        contacte = true;
+                    } else if (canal.getTypeCanal().equals(TypeCanal.MAIL.toString())) {
+                        // TODO Gestion de l'envoi des mails
+                        contacte = true;
+                    }
+                    if (contacte) {
+                        invitation.setReponse(EtatInvitation.EN_ATTENTE.toString());
+                        invitationFacade.edit(invitation);
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
+    
+    @Override
+    public String creerListeMessagesInvitations(int evenementId) {
+        try {
+            JSONArray array = new JSONArray();
+            Evenement evenement = evenementFacade.find(evenementId);
+            List<Invitation> invitations = (List<Invitation>)
+                    evenement.getInvitationCollection();
+            for (Invitation invitation: invitations) {
+                if (invitation.getReponse()
+                        .equals(EtatInvitation.NON_DEMANDEE.toString())) {
+                    if (invitationFacade.getInvitationEnAttente(
+                            invitation.getContact().getId()) == 0) {
+                        Canal canal = new Canal();
+                        Boolean contacte = false;
+                        if (canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.FACEBOOK) > 0) {
+                            canal = canalFacade.find(canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.FACEBOOK));
+                            getJsonInvitation(canal, evenement);
+                            contacte = true;
+                        } else if (canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.SMS) > 0) {
+                            canal = canalFacade.find(canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.SMS));
+                            if(canal.getReponse()) {
+                                getJsonInvitation(canal, evenement);
+                            } else {
+                                JSONObject obj = new JSONObject();
+                                Contact contact = invitation.getContact();
+                                obj.put("numero", canal.getValeur());
+                                obj.put("message", "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\\n" +
+                                        "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\\n" +
+                                        "Pour répondre à mon invitation tu peut contacter le service SaveTheDate de plusieurs façon :\\n" +
+                                        " - par Messenger en suivant le lien suivant : m.me/SaveTheDateAL2C \\n" +
+                                        " - par SMS en envoyant \"SafeTheDate\" au 06.44.63.22.39 \\n" +
+                                        "A bientôt !");
+                                array.put(obj);
+                            }
+                            contacte = true;
+                        } else if (canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.MAIL) > 0) {
+                            canal = canalFacade.find(canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.MAIL));
+                            // TODO Gestion de l'envoi des mails
+                            contacte = true;
+                        }
+                        if (contacte) {
+                            invitation.setReponse(EtatInvitation.EN_ATTENTE.toString());
+                            invitationFacade.edit(invitation);
+                        }
+                    }
+                }
+            }
+            return array.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public void creerInvitationPremierContact(String data) {
+        try {
+            JSONObject infos = new JSONObject(data);
+            Canal canal = new Canal();
+            /* Facebook */
+            if (infos.has("nom") && infos.has("prenom")) {
+                int idC = contactFacade.findContactByNomAndPrenom(
+                        infos.getString("nom"), infos.getString("prenom"));
+                if (idC > 0) {
+                    Contact c = contactFacade.find(idC);
+                    canal.setContactId(c);
+                    canal.setReponse(true);
+                    canal.setTypeCanal(TypeCanal.FACEBOOK.toString());
+                    canal.setConversationId(infos.getString("conversationId"));
+                    canalFacade.create(canal);
+                }
+            }
+            /* SMS */
+            if (infos.has("numero")) {
+                canal = canalFacade.findByValeur(infos.getString("numero"));
+                canal.setReponse(true);
+                canal.setConversationId(infos.getString("conversationId"));
+                canalFacade.edit(canal);
+            }
+            int idContact = contactFacade.findContactByConversationId(infos.getString("conversationId"));
+            int idEvenement = invitationFacade.getInvitationEnAttente(idContact);
+            System.err.println(idContact + " " + idEvenement);
+            if (idEvenement > 0) {
+                Evenement evenement = evenementFacade.find(idEvenement);
+                getJsonInvitation(canal, evenement);
+            }
+        } catch (JSONException e) {
+        }
+    }
+    
+    public void getJsonInvitation(Canal canal, Evenement evenement) {
+        JSONObject obj = new JSONObject();
+        JSONArray array = new JSONArray();
+        JSONObject message = new JSONObject();
+        message.put("type", "text");
+        message.put("content", evenement.getMessageInvitation());
+        array.put(message);
+        obj.put("messages", array);
+        System.err.println(obj);
+        System.err.println(canal.getConversationId());
+        envoyerMessage(canal.getConversationId(), obj);
+    }
+    
+    public void envoyerMessage(String conversationId, JSONObject obj) {
+        HttpURLConnection connection = null;
+        try {
+            String a="";
+            //Create connection
+            URL url = new URL("https://api.recast.ai/connect/v1/conversations/" + conversationId + "/messages");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", 
+                "Token 8eacd9988bf88405c98adff0f6304ab2");
+            connection.setRequestProperty("Content-Type", 
+                "application/json");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            
+            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+            wr.write(obj.toString());
+            wr.flush();
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+              String ligne;
+              while ((ligne = reader.readLine()) != null) {
+                  a += ligne;
+              }
+        } catch (IOException e) {
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
     

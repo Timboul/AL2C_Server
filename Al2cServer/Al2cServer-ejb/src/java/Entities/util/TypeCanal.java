@@ -17,6 +17,6 @@ public enum TypeCanal {
     FACEBOOK,
     
     /** CONTACT */
-    CONTACT
+    CONTACT;
     
 }

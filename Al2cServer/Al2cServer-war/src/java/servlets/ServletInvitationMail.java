@@ -125,7 +125,7 @@ public class ServletInvitationMail extends HttpServlet {
             noContactExistsException {
         String reponse = request.getParameter("reponse");
         String token = request.getParameter("token");
-        gestionInvitation.validerReponseInvitation(token,
+        gestionInvitation.validerReponseInvitationMail(token,
                 Boolean.parseBoolean(reponse));
         request.getRequestDispatcher(
                 "WEB-INF/pages/jspInvitationMailValidee.jsp")

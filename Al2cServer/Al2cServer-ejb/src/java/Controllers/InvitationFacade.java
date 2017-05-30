@@ -1,10 +1,6 @@
 package Controllers;
 
-import Entities.Contact;
-import Entities.Evenement;
 import Entities.Invitation;
-import Entities.Tag;
-import Entities.Utilisateur;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -48,6 +44,15 @@ public class InvitationFacade extends AbstractFacade<Invitation> {
                 "SELECT DISTINCT d.id from contact d, invitation i, evenement e where d.id = i.contact_id AND i.evenement_id = " + idEvenement + ")));").getResultList();
         }catch(Exception e){
             return null;
+        }
+    }
+    
+    public int getInvitationEnAttente(int idContact) {
+        try {
+            return (int) em.createNativeQuery("SELECT i.evenement_id FROM invitation i WHERE i.contact_id = "
+                    + idContact + " AND i.reponse = 'EN_ATTENTE';").getResultList().get(0);
+        }catch(Exception e){
+            return 0;
         }
     }
     
