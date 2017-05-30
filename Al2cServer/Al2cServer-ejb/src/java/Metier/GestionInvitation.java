@@ -30,6 +30,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.apache.commons.lang3.RandomStringUtils;
+import sun.nio.cs.ext.ISO2022_CN;
 
 /**
  * Implémentation de la gestion des invitations
@@ -412,7 +413,7 @@ public class GestionInvitation implements IGestionInvitation {
                                         "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\\n" +
                                         "Pour répondre à mon invitation tu peut contacter le service SaveTheDate de plusieurs façon :\\n" +
                                         " - par Messenger en suivant le lien suivant : m.me/SaveTheDateAL2C \\n" +
-                                        " - par SMS en envoyant \"SafeTheDate\" au 06.44.63.22.39 \\n" +
+                                        " - par SMS en envoyant \"SaveTheDate\" au 0644632239 \\n" +
                                         "A bientôt !");
                                 array.put(obj);
                             }
@@ -440,12 +441,23 @@ public class GestionInvitation implements IGestionInvitation {
         try {
             JSONObject infos = new JSONObject(data);
             Canal canal = new Canal();
+            int idC = 0;
+            Boolean isFacebook = false;
+            Boolean isSms = false;
             /* Facebook */
             if (infos.has("nom") && infos.has("prenom")) {
-                int idC = contactFacade.findContactByNomAndPrenom(
+                idC = contactFacade.findContactByNomAndPrenom(
                         infos.getString("nom"), infos.getString("prenom"));
-                if (idC > 0) {
-                    Contact c = contactFacade.find(idC);
+                if (idC > 0) isFacebook = true;
+            }
+            /* SMS */
+            if (infos.has("numero")) {
+                canal = canalFacade.findByValeur(infos.getString("numero"));
+                if (canal != null) isSms = true;
+            }
+            if (isFacebook) {
+                Contact c = contactFacade.find(idC);
+                if (c != null) {
                     canal.setContactId(c);
                     canal.setReponse(true);
                     canal.setTypeCanal(TypeCanal.FACEBOOK.toString());
@@ -453,19 +465,18 @@ public class GestionInvitation implements IGestionInvitation {
                     canalFacade.create(canal);
                 }
             }
-            /* SMS */
-            if (infos.has("numero")) {
-                canal = canalFacade.findByValeur(infos.getString("numero"));
+            if (isSms) {
                 canal.setReponse(true);
                 canal.setConversationId(infos.getString("conversationId"));
                 canalFacade.edit(canal);
             }
-            int idContact = contactFacade.findContactByConversationId(infos.getString("conversationId"));
-            int idEvenement = invitationFacade.getInvitationEnAttente(idContact);
-            System.err.println(idContact + " " + idEvenement);
-            if (idEvenement > 0) {
-                Evenement evenement = evenementFacade.find(idEvenement);
-                getJsonInvitation(canal, evenement);
+            if (isFacebook || isSms) {
+                int idContact = contactFacade.findContactByConversationId(infos.getString("conversationId"));
+                int idEvenement = invitationFacade.getInvitationEnAttente(idContact);
+                if (idEvenement > 0) {
+                    Evenement evenement = evenementFacade.find(idEvenement);
+                    getJsonInvitation(canal, evenement);
+                }
             }
         } catch (JSONException e) {
         }

@@ -518,6 +518,7 @@ public class EvenementFacadeREST {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response creerInvitationPremierContact(String data) {
         try {
+            System.err.println("appel fonctionne");
             gestionInvitation.creerInvitationPremierContact(data);
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
