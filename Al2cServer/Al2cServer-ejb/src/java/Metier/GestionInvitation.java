@@ -23,12 +23,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import org.json.*;
 import java.io.OutputStreamWriter;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.Message;
@@ -381,12 +384,12 @@ public class GestionInvitation implements IGestionInvitation {
                     } else if (canal.getTypeCanal().equals(TypeCanal.MAIL.toString())) {
                         Contact contact = invitation.getContact();
                         Evenement evenement = invitation.getEvenement();
-                        String subject = "Invitation à l'évènement \"" + evenement.getIntitule() + "\"";
-                        String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\n" +
-                                "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\n" +
-                                "Pour répondre à mon invitation, je t'invite à cliquer sur le lien suivant : " +
-                                "http://al2c.dtdns.net/Al2cServer-war/webresources/vous-etes-invite?token=" + invitation.getToken() + " \n" +
-                                "A bientôt !";
+                        String subject = "Invitation a l'evenement " + evenement.getIntitule();
+                        String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + " !\n" +
+                                "Je souhaite t'inviter a mon evenement \"" + evenement.getIntitule() + "\".\n" +
+                                "Pour repondre a mon invitation, je t'invite a cliquer sur le lien suivant : " +
+                                "http://www.savethedate-al2c.fr/vous-etes-invite?token=" + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
+                                "A bientot !";
                         sendMail(canal.getValeur(), subject, text);
                     }
                     if (contacte) {
@@ -425,9 +428,9 @@ public class GestionInvitation implements IGestionInvitation {
                                 JSONObject obj = new JSONObject();
                                 Contact contact = invitation.getContact();
                                 obj.put("numero", canal.getValeur());
-                                obj.put("message", "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\\n" +
+                                obj.put("message", "Bonjour " + contact.getPrenom() + " " + contact.getNom() + " !\\n" +
                                         "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\\n" +
-                                        "Pour répondre à mon invitation tu peut contacter le service SaveTheDate de plusieurs façon :\\n" +
+                                        "Pour répondre à mon invitation tu peux contacter le service SaveTheDate de plusieurs façons :\\n" +
                                         " - par Messenger en suivant le lien suivant : m.me/SaveTheDateAL2C \\n" +
                                         " - par SMS en envoyant \"SaveTheDate\" au 0644632239 \\n" +
                                         "A bientôt !");
@@ -437,22 +440,22 @@ public class GestionInvitation implements IGestionInvitation {
                         } else if (canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.MAIL) > 0) {
                             canal = canalFacade.find(canalFacade.findByIdContactAndTypeCanal(invitation.getContact().getId(), TypeCanal.MAIL));
                             Contact contact = invitation.getContact();
-                            String subject = "Invitation à l'évènement \"" + invitation.getEvenement().getIntitule() + "\"";
+                            String subject = "Invitation a l'evenement " + invitation.getEvenement().getIntitule();
                             if (canal.getReponse()) {
-                                String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\n" +
-                                        "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\n" +
-                                        "Pour répondre à mon invitation, je t'invite à cliquer sur le lien suivant : " +
-                                        "http://al2c.dtdns.net/Al2cServer-war/webresources/vous-etes-invite?token=" + invitation.getToken() + " \n" +
-                                        "A bientôt !";
+                                String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + " !\n" +
+                                        "Je souhaite t'inviter a mon evenement \"" + evenement.getIntitule() + "\".\n" +
+                                        "Pour repondre a mon invitation, je t'invite a cliquer sur le lien suivant : " +
+                                        "http://www.savethedate-al2c.fr/vous-etes-invite?token=" + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
+                                        "A bientot !";
                                 sendMail(canal.getValeur(), subject, text);
                             } else {
-                                String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + "!\n" +
-                                        "Je souhaite t'inviter à mon évènement \"" + evenement.getIntitule() + "\".\n" +
-                                        "Pour répondre à mon invitation tu peut contacter le service SaveTheDate de plusieurs façon :\n" +
+                                String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + " !\n" +
+                                        "Je souhaite t'inviter a mon evenement \"" + evenement.getIntitule() + "\".\n" +
+                                        "Pour repondre a mon invitation tu peux contacter le service SaveTheDate de plusieurs facons :\n" +
                                         " - par Messenger en suivant le lien suivant : m.me/SaveTheDateAL2C \n" +
-                                        " - en suivant le lien : http://al2c.dtdns.net/Al2cServer-war/webresources/vous-etes-invite?token=" 
-                                        + invitation.getToken() + " \n" +
-                                        "A bientôt !";
+                                        " - en suivant le lien : http://www.savethedate-al2c.fr/vous-etes-invite?token=" 
+                                        + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
+                                        "A bientot !";
                                 sendMail(canal.getValeur(), subject, text);
                             }
                             // TODO Gestion de l'envoi des mails
@@ -563,9 +566,9 @@ public class GestionInvitation implements IGestionInvitation {
         }
     }
     
-    private void sendMail(String addresse, String subject, String text) throws AddressException, MessagingException {
-        /*
-        final String username = "savethedate.al2c@gmail.com";
+private void sendMail(String addresse, String subject, String text) throws AddressException, MessagingException {
+
+        final String username = "savethedate.al2c";
         final String password = "al2cmiage";
 
         Properties props = new Properties();
@@ -574,13 +577,9 @@ public class GestionInvitation implements IGestionInvitation {
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
 
-        PasswordAuthentication passwordAuthentication = new PasswordAuthentication(username, password.toCharArray());
-        
-        Session session = Session.getInstance(props,
-                
-                new javax.mail.Authenticator() {passwordAuthentication}
-        });
-        
+        Session session;
+        session = Session.getInstance(props, null);
+
         try {
 
             Message message = new MimeMessage(session);
@@ -590,14 +589,16 @@ public class GestionInvitation implements IGestionInvitation {
             message.setSubject(subject);
             message.setText(text);
 
-            Transport.send(message);
+            Transport transport = session.getTransport("smtp");
+            String mfrom = username;
+            transport.connect("smtp.gmail.com", mfrom, password);
+            transport.sendMessage(message, message.getAllRecipients());
 
             System.out.println("Done");
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-        */
     }
     
     /**
