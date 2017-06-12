@@ -212,20 +212,14 @@ public class EvenementFacadeREST {
                 complement = obj.getString("complement");
             if (obj.has("dateFin"))
                 dateFin = obj.getString("dateFin");
-          
-            System.out.println("ded");
-            
             if (gestionEvenement.isEvenementEnPreparation(idEvent))
                 gestionLieu.modifierLieu(idEvent, pid, obj.getString("adresse"),
                         complement, obj.getString("codePostal"),
                         obj.getString("ville"));
-            
-                  System.out.println("ded1");
             gestionEvenement.modifierEvenement(idEvent, pid,
                     obj.getString("intitule"), obj.getString("description"),
                     obj.getString("dateDebut"), dateFin,
                     obj.getInt("nbPlaces"));      
-            System.out.println("ded3");
             return Response.ok(new JSONObject().put("Statut", "ok").toString(),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
