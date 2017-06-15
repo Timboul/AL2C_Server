@@ -52,9 +52,9 @@ public class GestionListe implements IGestionListe {
         try {
             Evenement e = evenementFacade.find(idEvenement);
             List<Liste> listes = (List<Liste>) e.getListeCollection();
-            Liste liste = listes.get(0);
-            if (liste == null)
-                throw new noListeArticleFoundException();
+            Liste liste = new Liste();
+            if (listes.size() > 0)
+                liste = listes.get(0);
             return liste;
         } catch (Exception e) {
             throw new noListeArticleFoundException();

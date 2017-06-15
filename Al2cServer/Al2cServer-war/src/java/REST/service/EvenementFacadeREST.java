@@ -688,16 +688,22 @@ public class EvenementFacadeREST {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getListeArticles(@PathParam("id") Integer idEvenement) {
         try {
+            String retour = "[]";
             JSONArray array = new JSONArray();
             List<Article> articles = (List<Article>) 
                     gestionListe.recupererListe(idEvenement).getArticleCollection();
-            for (Article article: articles) {
-                JSONObject tempo = new JSONObject();
-                tempo.put("produit", article.getLibelle());
-                tempo.put("quantite", article.getQuantite());
-                array.put(tempo);
+            if (articles != null) {
+                if (articles.size() > 0) {
+                    for (Article article: articles) {
+                        JSONObject tempo = new JSONObject();
+                        tempo.put("produit", article.getLibelle());
+                        tempo.put("quantite", article.getQuantite());
+                        array.put(tempo);
+                    }
+                    retour = array.toString();
+                }
             }
-            return Response.ok(array.toString(),
+            return Response.ok(retour,
                     MediaType.APPLICATION_JSON).build();
         } catch (noListeArticleFoundException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
