@@ -82,6 +82,9 @@ public class Evenement implements Serializable {
     private String messageInvitation;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "evenement")
+    private Collection<Liste> listeCollection;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "evenement")
     private Collection<Invitation> invitationCollection;
     
     @JoinColumn(name = "utilisateur_id", referencedColumnName = "id")
@@ -166,6 +169,15 @@ public class Evenement implements Serializable {
 
     public void setMessageInvitation(String messageInvitation) {
         this.messageInvitation = messageInvitation;
+    }
+    
+    @XmlTransient
+    public Collection<Liste> getListeCollection() {
+        return listeCollection;
+    }
+
+    public void setListeCollection(Collection<Liste> listeCollection) {
+        this.listeCollection = listeCollection;
     }
 
     @XmlTransient

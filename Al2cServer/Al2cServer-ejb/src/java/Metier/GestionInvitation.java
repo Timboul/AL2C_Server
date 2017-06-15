@@ -23,15 +23,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import org.json.*;
 import java.io.OutputStreamWriter;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.Message;
@@ -42,7 +38,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.RandomStringUtils;
-import sun.nio.cs.ext.ISO2022_CN;
 
 /**
  * Implémentation de la gestion des invitations
@@ -388,7 +383,7 @@ public class GestionInvitation implements IGestionInvitation {
                         String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + " !\n" +
                                 "Je souhaite t'inviter a mon evenement \"" + evenement.getIntitule() + "\".\n" +
                                 "Pour repondre a mon invitation, je t'invite a cliquer sur le lien suivant : " +
-                                "http://www.savethedate-al2c.fr/vous-etes-invite?token=" + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
+                                "http://al2c.savethedate-al2c.fr/vous-etes-invite?token=" + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
                                 "A bientot !";
                         sendMail(canal.getValeur(), subject, text);
                     }
@@ -445,7 +440,7 @@ public class GestionInvitation implements IGestionInvitation {
                                 String text = "Bonjour " + contact.getPrenom() + " " + contact.getNom() + " !\n" +
                                         "Je souhaite t'inviter a mon evenement \"" + evenement.getIntitule() + "\".\n" +
                                         "Pour repondre a mon invitation, je t'invite a cliquer sur le lien suivant : " +
-                                        "http://www.savethedate-al2c.fr/vous-etes-invite?token=" + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
+                                        "http://al2c.savethedate-al2c.fr/vous-etes-invite?token=" + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
                                         "A bientot !";
                                 sendMail(canal.getValeur(), subject, text);
                             } else {
@@ -453,7 +448,7 @@ public class GestionInvitation implements IGestionInvitation {
                                         "Je souhaite t'inviter a mon evenement \"" + evenement.getIntitule() + "\".\n" +
                                         "Pour repondre a mon invitation tu peux contacter le service SaveTheDate de plusieurs facons :\n" +
                                         " - par Messenger en suivant le lien suivant : m.me/SaveTheDateAL2C \n" +
-                                        " - en suivant le lien : http://www.savethedate-al2c.fr/vous-etes-invite?token=" 
+                                        " - en suivant le lien : http://al2c.savethedate-al2c.fr/vous-etes-invite?token=" 
                                         + invitation.getToken() + "_" + contact.getId() + "_" + evenement.getId() + " \n" +
                                         "A bientot !";
                                 sendMail(canal.getValeur(), subject, text);

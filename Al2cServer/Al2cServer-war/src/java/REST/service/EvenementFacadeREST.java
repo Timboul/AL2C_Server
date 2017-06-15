@@ -1,11 +1,13 @@
 package REST.service;
 
+import Entities.Article;
 import Entities.Contact;
 import Entities.Evenement;
 import Entities.Invitation;
 import Entities.Tag;
 import Exception.notFoundEvenementException;
 import Entities.util.EtatEvenement;
+import Exception.noListeArticleFoundException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -22,6 +24,7 @@ import org.json.*;
 import Metier.IGestionEvenement;
 import Metier.IGestionInvitation;
 import Metier.IGestionLieu;
+import Metier.IGestionListe;
 import java.util.ArrayList;
 
 /**
@@ -41,23 +44,21 @@ public class EvenementFacadeREST {
     
     @EJB
     private IGestionInvitation gestionInvitation;
+    
+    @EJB
+    private IGestionListe gestionListe;
 
     @GET
-    @Path("getListeEvenements")
+    @Path("getListeEvenementsPasse")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getListeEvenements(@QueryParam("token") int pid) {
+    public Response getListeEvenementsPasse(@QueryParam("token") int pid) {
         try {
             List<Evenement> lesEvents = gestionEvenement
                     .getListeEvenements(pid);
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement()
-                        .equals(EtatEvenement.PASSE.toString()) || 
-                    e.getEtatEvenement()
-                            .equals(EtatEvenement.ANNULE.toString()) || 
-                    e.getEtatEvenement()
-                            .equals(EtatEvenement.EN_PREPARATION.toString())) {
+                if (e.getEtatEvenement().equals(EtatEvenement.PASSE.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
@@ -88,21 +89,136 @@ public class EvenementFacadeREST {
     }
 
     @GET
-    @Path("getListeEvenementsA_Venir")
+    @Path("getListeEvenementsAnnule")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getListeEvenementsA_Venir(@QueryParam("token") int pid) {
+    public Response getListeEvenementsAnnule(@QueryParam("token") int pid) {
         try {
             List<Evenement> lesEvents = gestionEvenement
                     .getListeEvenements(pid);
             JSONArray events = new JSONArray();
             JSONObject obj = new JSONObject();
             for (Evenement e : lesEvents) {
-                if (e.getEtatEvenement()
-                        .equals(EtatEvenement.A_VENIR.toString()) || 
-                    e.getEtatEvenement()
-                            .equals(EtatEvenement.EN_COURS.toString()) || 
-                    e.getEtatEvenement()
-                            .equals(EtatEvenement.EN_PREPARATION.toString())) {
+                if (e.getEtatEvenement().equals(EtatEvenement.ANNULE.toString())) {
+                    JSONObject tempo = new JSONObject();
+                    tempo.put("id", e.getId());
+                    tempo.put("etat", e.getEtatEvenement());
+                    tempo.put("intitule", e.getIntitule());
+                    tempo.put("dateDebut", e.getDateDebut().getTime());
+                    if (e.getDateFin() != null)
+                        tempo.put("dateFin", e.getDateFin().getTime());
+                    tempo.put("nbInvites", e.getInvitationCollection().size());
+                    tempo.put("nbPlaces", e.getNombreInvites());
+                    int nbPresents = 0;
+                    for (Invitation i : e.getInvitationCollection())
+                        if (i.getPresence())
+                            nbPresents++;
+                    tempo.put("nbPresents", nbPresents);
+                    tempo.put("adresse", e.getLieuId().getAdresse());
+                    tempo.put("complement", e.getLieuId().getComplement());
+                    tempo.put("codePostal", e.getLieuId().getCodePostal());
+                    tempo.put("ville", e.getLieuId().getVille());
+                    events.put(tempo);
+                }
+            }
+            obj.put("Evenements", events);
+            return Response.ok(events.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("getListeEvenementsEnPreparation")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeEvenementsEnPreparation(@QueryParam("token") int pid) {
+        try {
+            List<Evenement> lesEvents = gestionEvenement
+                    .getListeEvenements(pid);
+            JSONArray events = new JSONArray();
+            JSONObject obj = new JSONObject();
+            for (Evenement e : lesEvents) {
+                if (e.getEtatEvenement().equals(EtatEvenement.EN_PREPARATION.toString())) {
+                    JSONObject tempo = new JSONObject();
+                    tempo.put("id", e.getId());
+                    tempo.put("etat", e.getEtatEvenement());
+                    tempo.put("intitule", e.getIntitule());
+                    tempo.put("dateDebut", e.getDateDebut().getTime());
+                    if (e.getDateFin() != null)
+                        tempo.put("dateFin", e.getDateFin().getTime());
+                    tempo.put("nbInvites", e.getInvitationCollection().size());
+                    tempo.put("nbPlaces", e.getNombreInvites());
+                    int nbPresents = 0;
+                    for (Invitation i : e.getInvitationCollection())
+                        if (i.getPresence())
+                            nbPresents++;
+                    tempo.put("nbPresents", nbPresents);
+                    tempo.put("adresse", e.getLieuId().getAdresse());
+                    tempo.put("complement", e.getLieuId().getComplement());
+                    tempo.put("codePostal", e.getLieuId().getCodePostal());
+                    tempo.put("ville", e.getLieuId().getVille());
+                    events.put(tempo);
+                }
+            }
+            obj.put("Evenements", events);
+            return Response.ok(events.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("getListeEvenementsEnCours")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeEvenementsEnCours(@QueryParam("token") int pid) {
+        try {
+            List<Evenement> lesEvents = gestionEvenement
+                    .getListeEvenements(pid);
+            JSONArray events = new JSONArray();
+            JSONObject obj = new JSONObject();
+            for (Evenement e : lesEvents) {
+                if (e.getEtatEvenement().equals(EtatEvenement.EN_COURS.toString())) {
+                    JSONObject tempo = new JSONObject();
+                    tempo.put("id", e.getId());
+                    tempo.put("etat", e.getEtatEvenement());
+                    tempo.put("intitule", e.getIntitule());
+                    tempo.put("dateDebut", e.getDateDebut().getTime());
+                    if (e.getDateFin() != null)
+                        tempo.put("dateFin", e.getDateFin().getTime());
+                    tempo.put("nbInvites", e.getInvitationCollection().size());
+                    tempo.put("nbPlaces", e.getNombreInvites());
+                    int nbPresents = 0;
+                    for (Invitation i : e.getInvitationCollection())
+                        if (i.getPresence())
+                            nbPresents++;
+                    tempo.put("nbPresents", nbPresents);
+                    tempo.put("adresse", e.getLieuId().getAdresse());
+                    tempo.put("complement", e.getLieuId().getComplement());
+                    tempo.put("codePostal", e.getLieuId().getCodePostal());
+                    tempo.put("ville", e.getLieuId().getVille());
+                    events.put(tempo);
+                }
+            }
+            obj.put("Evenements", events);
+            return Response.ok(events.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (notFoundEvenementException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("getListeEvenementsAVenir")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeEvenementsAVenir(@QueryParam("token") int pid) {
+        try {
+            List<Evenement> lesEvents = gestionEvenement
+                    .getListeEvenements(pid);
+            JSONArray events = new JSONArray();
+            JSONObject obj = new JSONObject();
+            for (Evenement e : lesEvents) {
+                if (e.getEtatEvenement().equals(EtatEvenement.A_VENIR.toString())) {
                     JSONObject tempo = new JSONObject();
                     tempo.put("id", e.getId());
                     tempo.put("etat", e.getEtatEvenement());
@@ -540,6 +656,50 @@ public class EvenementFacadeREST {
             return Response.ok(gestionInvitation.creerListeMessagesInvitations(idEvenement),
                     MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @POST
+    @Path("{id}/creerListeArticle")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response creerListeArticle(@PathParam("id") Integer idEvenement, String data) {
+        try {
+            JSONArray array = new JSONArray(data);
+            ArrayList<Article> articles = new ArrayList<Article>();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject produit = array.getJSONObject(i);
+                Article article = new Article();
+                article.setLibelle(produit.getString("produit"));
+                article.setQuantite(produit.getInt("quantite"));
+                articles.add(article);
+            }
+            gestionListe.ajouterListe(idEvenement, articles);
+            return Response.ok(new JSONObject().put("Statut", "ok").toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    
+    @GET
+    @Path("{id}/getListeArticles")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListeArticles(@PathParam("id") Integer idEvenement) {
+        try {
+            JSONArray array = new JSONArray();
+            List<Article> articles = (List<Article>) 
+                    gestionListe.recupererListe(idEvenement).getArticleCollection();
+            for (Article article: articles) {
+                JSONObject tempo = new JSONObject();
+                tempo.put("produit", article.getLibelle());
+                tempo.put("quantite", article.getQuantite());
+                array.put(tempo);
+            }
+            return Response.ok(array.toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (noListeArticleFoundException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
